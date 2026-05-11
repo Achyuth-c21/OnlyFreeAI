@@ -11,6 +11,9 @@ import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
 import com.onlyfreeai.app.util.toast
 
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 class AdminActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminBinding
@@ -33,7 +36,7 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun verifyAdminAccess() {
-        androidx.lifecycle.lifecycleScope.launchWhenStarted {
+        lifecycleScope.launch {
             val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
             if (!isAdmin) {
                 toast("Unauthorized access.")

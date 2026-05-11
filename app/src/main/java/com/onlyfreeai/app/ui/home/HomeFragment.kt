@@ -17,6 +17,9 @@ import com.onlyfreeai.app.util.Constants
 import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
 
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -43,7 +46,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupAdminButton() {
-        androidx.lifecycle.lifecycleScope.launchWhenStarted {
+        lifecycleScope.launch {
             val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
             if (isAdmin) {
                 binding.btnAdmin.show()
