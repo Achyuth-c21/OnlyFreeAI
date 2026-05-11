@@ -7,6 +7,7 @@ import android.os.Build
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.PersistentCacheSettings
 
 class OnlyFreeAIApp : Application() {
 
@@ -14,11 +15,15 @@ class OnlyFreeAIApp : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
-        // Enable Firestore offline persistence
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
-            .build()
-        FirebaseFirestore.getInstance().firestoreSettings = settings
+        // Enable Firestore offline persistence (modern API)
+        try {
+            val settings = FirebaseFirestoreSettings.Builder()
+                .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
+                .build()
+            FirebaseFirestore.getInstance().firestoreSettings = settings
+        } catch (e: Exception) {
+            // Settings already applied or Firestore already accessed
+        }
 
         createNotificationChannels()
     }

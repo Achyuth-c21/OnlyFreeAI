@@ -38,7 +38,7 @@ object UrlFetcher {
                 .build()
 
             val response = client.newCall(request).execute()
-            val html = response.body?.string() ?: ""
+            val html = response.use { it.body?.string() ?: "" }
             val doc = Jsoup.parse(html)
 
             val title = doc.select("meta[property=og:title]").attr("content")

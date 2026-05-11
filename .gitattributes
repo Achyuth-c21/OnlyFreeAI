@@ -1,0 +1,8 @@
+# Force LF line endings for shell scripts (required for Linux/Codespaces)
+*.sh text eol=lf
+
+# Gradle wrapper scripts
+gradlew text eol=lf
+
+# Keep Windows line endings for bat files
+*.bat text eol=crlf

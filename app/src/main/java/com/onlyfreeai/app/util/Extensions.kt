@@ -69,8 +69,8 @@ fun Timestamp.toRelativeTime(): String {
 // ─── String Extensions ──────────────────────────────────────
 fun String.sanitize(): String {
     return this
-        .replace(Regex("<[^>]*>"), "") // Strip HTML tags
-        .replace(Regex("<script[^>]*>[\\s\\S]*?</script>"), "") // Strip scripts
+        .replace(Regex("<script[^>]*>[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), "") // Strip scripts first
+        .replace(Regex("<[^>]*>"), "") // Then strip remaining HTML tags
         .trim()
         .take(Constants.MAX_DESCRIPTION_LENGTH)
 }
