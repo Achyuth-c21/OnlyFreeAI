@@ -62,8 +62,16 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupGoogleSignIn() {
+        val clientIdRes = resources.getIdentifier("default_web_client_id", "string", packageName)
+        val clientId = if (clientIdRes != 0) {
+            getString(clientIdRes)
+        } else {
+            // Fallback that will compile but fail at runtime until Firebase is configured
+            "UNCONFIGURED_CLIENT_ID"
+        }
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestIdToken(clientId)
             .requestEmail()
             .build()
 
