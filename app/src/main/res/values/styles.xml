@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Badge -->
+    <style name="Badge">
+        <item name="android:textSize">@dimen/text_xs</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <!-- Verified Badge -->
     <style name="Badge.Verified">
         <item name="android:background">@drawable/bg_badge_verified</item>
