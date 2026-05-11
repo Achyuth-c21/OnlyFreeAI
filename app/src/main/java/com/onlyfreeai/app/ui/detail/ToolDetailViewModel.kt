@@ -49,7 +49,7 @@ class ToolDetailViewModel : ViewModel() {
         isTogglingSave = true
         viewModelScope.launch {
             try {
-                val userId = userRepository.getCurrentUserId() ?: throw Exception("Must be logged in to save tools")
+                if (userRepository.getCurrentUserId() == null) throw Exception("Must be logged in to save tools")
                 val currentlySaved = _isSaved.value ?: false
                 if (currentlySaved) {
                     userRepository.unsaveTool(toolId)
@@ -74,7 +74,7 @@ class ToolDetailViewModel : ViewModel() {
         isFlagging = true
         viewModelScope.launch {
             try {
-                val userId = userRepository.getCurrentUserId() ?: throw Exception("Must be logged in to flag tools")
+                if (userRepository.getCurrentUserId() == null) throw Exception("Must be logged in to flag tools")
                 // In a full implementation, this would create a report
                 // For v1, we just mark it for admin review
                 toolRepository.updateToolStatus(toolId, "flagged")

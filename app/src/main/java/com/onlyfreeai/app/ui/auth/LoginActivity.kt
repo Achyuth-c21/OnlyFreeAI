@@ -21,6 +21,7 @@ import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
 import com.onlyfreeai.app.util.toast
 
+@Suppress("DEPRECATION")
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
