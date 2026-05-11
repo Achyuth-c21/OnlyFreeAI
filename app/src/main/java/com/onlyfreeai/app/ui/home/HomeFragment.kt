@@ -37,8 +37,23 @@ class HomeFragment : Fragment() {
         setupSearch()
         setupCategoryFilter()
         observeData()
+        setupAdminButton()
 
         viewModel.loadTools()
+    }
+
+    private fun setupAdminButton() {
+        androidx.lifecycle.lifecycleScope.launchWhenStarted {
+            val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
+            if (isAdmin) {
+                binding.btnAdmin.show()
+                binding.btnAdmin.setOnClickListener {
+                    startActivity(Intent(requireContext(), com.onlyfreeai.app.ui.admin.AdminActivity::class.java))
+                }
+            } else {
+                binding.btnAdmin.hide()
+            }
+        }
     }
 
     private fun setupRecyclerView() {

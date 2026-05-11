@@ -29,7 +29,19 @@ class AdminActivity : AppCompatActivity() {
         setupRecyclerView()
         observeData()
 
-        viewModel.loadPendingSubmissions()
+        verifyAdminAccess()
+    }
+
+    private fun verifyAdminAccess() {
+        androidx.lifecycle.lifecycleScope.launchWhenStarted {
+            val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
+            if (!isAdmin) {
+                toast("Unauthorized access.")
+                finish()
+            } else {
+                viewModel.loadPendingSubmissions()
+            }
+        }
     }
 
     private fun setupToolbar() {

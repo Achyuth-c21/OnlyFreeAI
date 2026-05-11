@@ -12,25 +12,23 @@ class LoginViewModel : ViewModel() {
     private val userRepository = UserRepository()
     private val auth = FirebaseAuth.getInstance()
 
-    fun saveUserToFirestore() {
+    suspend fun saveUserToFirestore() {
         val firebaseUser = auth.currentUser ?: return
 
-        viewModelScope.launch {
-            try {
-                val existingUser = userRepository.getCurrentUser()
-                if (existingUser == null) {
-                    val newUser = User(
-                        id = firebaseUser.uid,
-                        name = firebaseUser.displayName ?: "",
-                        email = firebaseUser.email ?: "",
-                        photoUrl = firebaseUser.photoUrl?.toString() ?: "",
-                        isAdmin = false
-                    )
-                    userRepository.createOrUpdateUser(newUser)
-                }
-            } catch (e: Exception) {
-                // Silently fail — user will be created on next interaction
+        try {
+            val existingUser = userRepository.getCurrentUser()
+            if (existingUser == null) {
+                val newUser = User(
+                    id = firebaseUser.uid,
+                    name = firebaseUser.displayName ?: "",
+                    email = firebaseUser.email ?: "",
+                    photoUrl = firebaseUser.photoUrl?.toString() ?: "",
+                    isAdmin = false
+                )
+                userRepository.createOrUpdateUser(newUser)
             }
+        } catch (e: Exception) {
+            // Silently fail — user will be created on next interaction
         }
     }
 }

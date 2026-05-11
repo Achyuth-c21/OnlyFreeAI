@@ -12,6 +12,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.onlyfreeai.app.MainActivity
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.ActivityLoginBinding
@@ -79,11 +81,14 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
-                binding.progressBar.hide()
                 if (task.isSuccessful) {
-                    viewModel.saveUserToFirestore()
-                    navigateToMain()
+                    lifecycleScope.launch {
+                        viewModel.saveUserToFirestore()
+                        binding.progressBar.hide()
+                        navigateToMain()
+                    }
                 } else {
+                    binding.progressBar.hide()
                     toast("Authentication failed.")
                 }
             }
