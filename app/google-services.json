@@ -12,7 +12,12 @@
           "package_name": "com.onlyfreeai.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "533784515869-webclientid1234567890abcdef.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDJxJMVGDMbjSMdHvFB5InpBiTxGQgLbqk"
