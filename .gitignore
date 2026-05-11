@@ -8,7 +8,6 @@
 .externalNativeBuild
 .cxx
 local.properties
-google-services.json
 *.docx
 node_modules/
 prd.js

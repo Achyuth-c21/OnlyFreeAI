@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "533784515869",
+    "project_id": "onlyfreeai",
+    "storage_bucket": "onlyfreeai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533784515869:android:eaf5c2f696935d1b913df4",
+        "android_client_info": {
+          "package_name": "com.onlyfreeai.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqJrmGuW1l9MMH2G6qWzrQbMjCq3g9kjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
