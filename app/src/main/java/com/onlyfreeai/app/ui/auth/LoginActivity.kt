@@ -36,10 +36,14 @@ class LoginActivity : AppCompatActivity() {
         try {
             val account = task.getResult(ApiException::class.java)
             account.idToken?.let { firebaseAuthWithGoogle(it) }
+                ?: run {
+                    binding.progressBar.hide()
+                    toast("Sign in failed: no ID token received.")
+                }
         } catch (e: ApiException) {
-            Log.e("LoginActivity", "Google sign in failed", e)
+            Log.e("LoginActivity", "Google sign in failed, code=${e.statusCode}", e)
             binding.progressBar.hide()
-            toast("Sign in failed. Please try again.")
+            toast("Sign in failed (code ${e.statusCode}). Please try again.")
         }
     }
 
@@ -62,16 +66,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupGoogleSignIn() {
-        val clientIdRes = resources.getIdentifier("default_web_client_id", "string", packageName)
-        val clientId = if (clientIdRes != 0) {
-            getString(clientIdRes)
-        } else {
-            // Fallback that will compile but fail at runtime until Firebase is configured
-            "UNCONFIGURED_CLIENT_ID"
-        }
-
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(clientId)
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
@@ -81,8 +77,11 @@ class LoginActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         binding.btnGoogleSignIn.setOnClickListener {
             binding.progressBar.show()
-            val signInIntent = googleSignInClient.signInIntent
-            signInLauncher.launch(signInIntent)
+            // Sign out first to force account picker every time
+            googleSignInClient.signOut().addOnCompleteListener {
+                val signInIntent = googleSignInClient.signInIntent
+                signInLauncher.launch(signInIntent)
+            }
         }
     }
 
@@ -95,7 +94,7 @@ class LoginActivity : AppCompatActivity() {
                         try {
                             viewModel.saveUserToFirestore()
                         } catch (e: Exception) {
-                            Log.e("LoginActivity", "Firestore error", e)
+                            Log.e("LoginActivity", "Firestore save error", e)
                         }
                         if (!isFinishing && !isDestroyed) {
                             binding.progressBar.hide()
@@ -103,9 +102,10 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 } else {
+                    Log.e("LoginActivity", "signInWithCredential failed", task.exception)
                     if (!isFinishing && !isDestroyed) {
                         binding.progressBar.hide()
-                        toast("Authentication failed.")
+                        toast("Authentication failed: ${task.exception?.message}")
                     }
                 }
             }

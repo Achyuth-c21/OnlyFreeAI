@@ -1,0 +1,13 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "OnlyFreeAI",
+        "supportEmail": "nampallyachyuth111@gmail.com"
+      }
+    }
+  }
+}

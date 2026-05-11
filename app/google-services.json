@@ -12,7 +12,12 @@
           "package_name": "com.onlyfreeai.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAqJrmGuW1l9MMH2G6qWzrQbMjCq3g9kjk"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
