@@ -3,17 +3,10 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "17",
-      "installGradle": "true",
-      "installMaven": "false"
-    }
-  },
   "customizations": {
     "vscode": {
       "settings": {
-        "java.home": "/usr/lib/jvm/msopenjdk-17-amd64",
+        "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
         "kotlin.compiler.jvmTarget": "17"
       },
       "extensions": [
@@ -26,5 +19,5 @@
     }
   },
   "remoteUser": "vscode",
-  "postCreateCommand": "yes | sdkmanager --licenses && gradle wrapper && chmod +x gradlew"
+  "postCreateCommand": "yes | sdkmanager --licenses && chmod +x gradlew"
 }
