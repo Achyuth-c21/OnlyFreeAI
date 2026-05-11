@@ -60,5 +60,4 @@
     <string name="added_format">Added %s</string>
     <string name="loading">Loading…</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
-    <string name="default_web_client_id">REPLACE_WITH_YOUR_WEB_CLIENT_ID</string>
 </resources>
