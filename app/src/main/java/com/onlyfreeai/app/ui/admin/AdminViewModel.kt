@@ -62,10 +62,13 @@ class AdminViewModel : ViewModel() {
         }
     }
 
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
     fun approveSubmission(submission: Submission) {
         viewModelScope.launch {
             try {
-                val adminId = auth.currentUser?.uid ?: return@launch
+                val adminId = auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
 
                 // Approve the submission
                 submissionRepository.approveSubmission(submission.id, adminId)
@@ -88,7 +91,7 @@ class AdminViewModel : ViewModel() {
                 // Reload list
                 loadPendingSubmissions()
             } catch (e: Exception) {
-                // Handle error
+                _error.value = "Failed to approve: ${e.message}"
             }
         }
     }
@@ -96,11 +99,11 @@ class AdminViewModel : ViewModel() {
     fun rejectSubmission(submissionId: String, reason: String) {
         viewModelScope.launch {
             try {
-                val adminId = auth.currentUser?.uid ?: return@launch
+                val adminId = auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
                 submissionRepository.rejectSubmission(submissionId, adminId, reason)
                 loadPendingSubmissions()
             } catch (e: Exception) {
-                // Handle error
+                _error.value = "Failed to reject: ${e.message}"
             }
         }
     }

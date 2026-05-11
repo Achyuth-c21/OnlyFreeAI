@@ -23,16 +23,23 @@ class ToolDetailViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private var isTogglingSave = false
     private var isFlagging = false
 
     fun loadTool(toolId: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 _tool.value = toolRepository.getToolById(toolId)
                 _isSaved.value = userRepository.isToolSaved(toolId)
             } catch (e: Exception) {
                 _tool.value = null
+                _error.value = "Failed to load tool details."
+            } finally {
+                _isLoading.value = false
             }
         }
     }

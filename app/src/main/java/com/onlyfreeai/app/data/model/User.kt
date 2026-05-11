@@ -20,6 +20,6 @@ data class User(
 ) {
     companion object {
         const val COLLECTION = "users"
-        const val MAX_SUBMISSIONS_PER_DAY = 3
+        const val MAX_SUBMISSIONS_PER_DAY = com.onlyfreeai.app.util.Constants.MAX_SUBMISSIONS_PER_DAY
     }
 }

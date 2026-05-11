@@ -25,9 +25,7 @@ class MyStackViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val savedIds = userRepository.getSavedToolIds()
-                val tools = savedIds.mapNotNull { toolId ->
-                    toolRepository.getToolById(toolId)
-                }
+                val tools = toolRepository.getToolsByIds(savedIds)
                 _savedTools.value = tools
             } catch (e: Exception) {
                 _savedTools.value = emptyList()

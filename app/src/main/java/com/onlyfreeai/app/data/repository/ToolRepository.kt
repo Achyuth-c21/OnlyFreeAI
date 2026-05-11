@@ -93,4 +93,17 @@ class ToolRepository {
             .await()
             .toObjects(Tool::class.java)
     }
+
+    suspend fun getToolsByIds(toolIds: List<String>): List<Tool> {
+        if (toolIds.isEmpty()) return emptyList()
+        val result = mutableListOf<Tool>()
+        for (chunk in toolIds.chunked(10)) {
+            val chunkResult = toolsRef.whereIn(com.google.firebase.firestore.FieldPath.documentId(), chunk)
+                .get()
+                .await()
+                .toObjects(Tool::class.java)
+            result.addAll(chunkResult)
+        }
+        return result
+    }
 }

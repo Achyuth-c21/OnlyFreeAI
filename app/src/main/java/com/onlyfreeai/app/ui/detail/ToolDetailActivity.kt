@@ -75,13 +75,18 @@ class ToolDetailActivity : AppCompatActivity() {
                 // Flag as Gone Paid
                 btnGonePaid.setOnClickListener {
                     viewModel.flagAsPaid(tool.id)
-                    toast("Thanks! We'll review this tool.")
                 }
             }
         }
 
         viewModel.isSaved.observe(this) { isSaved ->
             binding.btnSaveTool.text = if (isSaved) "★ Saved" else "☆ Save to Stack"
+        }
+
+        viewModel.error.observe(this) { errorMsg ->
+            if (errorMsg.isNotBlank()) {
+                toast(errorMsg)
+            }
         }
     }
 }

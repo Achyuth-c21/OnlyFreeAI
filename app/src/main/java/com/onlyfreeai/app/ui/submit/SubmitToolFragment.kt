@@ -59,8 +59,24 @@ class SubmitToolFragment : Fragment() {
             val category = binding.spinnerCategory.selectedItem.toString()
             val whatsFree = binding.etWhatsFree.text.toString().trim()
 
-            if (url.isBlank() || name.isBlank() || description.isBlank() || whatsFree.isBlank()) {
-                requireContext().toast("Please fill in all fields")
+            if (url.isBlank() || !android.util.Patterns.WEB_URL.matcher(url).matches()) {
+                requireContext().toast("Please enter a valid URL")
+                return@setOnClickListener
+            }
+            if (name.isBlank() || name.length > Constants.MAX_TOOL_NAME_LENGTH) {
+                requireContext().toast("Name must be 1-${Constants.MAX_TOOL_NAME_LENGTH} characters")
+                return@setOnClickListener
+            }
+            if (description.isBlank() || description.length > Constants.MAX_DESCRIPTION_LENGTH) {
+                requireContext().toast("Description must be 1-${Constants.MAX_DESCRIPTION_LENGTH} characters")
+                return@setOnClickListener
+            }
+            if (category == "All" || category.isBlank()) {
+                requireContext().toast("Please select a valid category")
+                return@setOnClickListener
+            }
+            if (whatsFree.isBlank() || whatsFree.length > Constants.MAX_FREE_ITEM_LENGTH) {
+                requireContext().toast("What's free info must be 1-${Constants.MAX_FREE_ITEM_LENGTH} characters")
                 return@setOnClickListener
             }
 
@@ -112,10 +128,10 @@ class SubmitToolFragment : Fragment() {
     }
 
     private fun clearForm() {
-        binding.etUrl.text?.clear()
-        binding.etName.text?.clear()
-        binding.etDescription.text?.clear()
-        binding.etWhatsFree.text?.clear()
+        binding.etUrl.setText("")
+        binding.etName.setText("")
+        binding.etDescription.setText("")
+        binding.etWhatsFree.setText("")
         binding.spinnerCategory.setSelection(0)
     }
 

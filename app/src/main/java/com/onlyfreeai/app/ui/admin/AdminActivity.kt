@@ -37,12 +37,17 @@ class AdminActivity : AppCompatActivity() {
 
     private fun verifyAdminAccess() {
         lifecycleScope.launch {
-            val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
-            if (!isAdmin) {
-                toast("Unauthorized access.")
+            try {
+                val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
+                if (!isAdmin) {
+                    toast("Unauthorized access.")
+                    finish()
+                } else {
+                    viewModel.loadPendingSubmissions()
+                }
+            } catch (e: Exception) {
+                toast("Error verifying access.")
                 finish()
-            } else {
-                viewModel.loadPendingSubmissions()
             }
         }
     }
@@ -115,6 +120,12 @@ class AdminActivity : AppCompatActivity() {
 
         viewModel.isLoading.observe(this) { isLoading ->
             if (isLoading) binding.progressBar.show() else binding.progressBar.hide()
+        }
+
+        viewModel.error.observe(this) { errorMsg ->
+            if (errorMsg.isNotBlank()) {
+                toast(errorMsg)
+            }
         }
     }
 }
