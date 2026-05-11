@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OnlyFreeAI</string>
+    <string name="tagline">Only Free. Only AI.</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_my_stack">My Stack</string>
+    <string name="nav_submit">Submit</string>
+
+    <!-- Login -->
+    <string name="login_title">Welcome to OnlyFreeAI</string>
+    <string name="login_subtitle">Discover verified free AI tools</string>
+    <string name="btn_google_sign_in">Sign in with Google</string>
+
+    <!-- Home -->
+    <string name="search_hint">Search tools or what you want to do…</string>
+    <string name="filter_all">All Categories</string>
+    <string name="empty_tools">No tools found</string>
+    <string name="empty_tools_subtitle">Try a different search or category</string>
+
+    <!-- Tool Detail -->
+    <string name="whats_free">What\'s Free</string>
+    <string name="whats_not_free">What\'s NOT Free</string>
+    <string name="best_for">Best For</string>
+    <string name="btn_visit_tool">Visit Tool</string>
+    <string name="btn_save_to_stack">Save to Stack</string>
+    <string name="btn_saved">★ Saved</string>
+    <string name="btn_gone_paid">Gone Paid?</string>
+    <string name="verified_free">✓ Verified Free</string>
+
+    <!-- My Stack -->
+    <string name="my_stack_title">My Stack</string>
+    <string name="empty_stack">Your stack is empty</string>
+    <string name="empty_stack_subtitle">Save tools from the home screen</string>
+
+    <!-- Submit Tool -->
+    <string name="submit_title">Submit a Tool</string>
+    <string name="submit_subtitle">Know a free AI tool? Share it with the community.</string>
+    <string name="hint_url">Paste tool URL</string>
+    <string name="btn_fetch">Auto-Fetch</string>
+    <string name="hint_name">Tool name</string>
+    <string name="hint_description">Brief description (max 300 chars)</string>
+    <string name="hint_category">Select category</string>
+    <string name="hint_whats_free">What\'s free? (one item per line)</string>
+    <string name="btn_submit">Submit for Review</string>
+    <string name="rate_limit_msg">Max 3 submissions per day</string>
+
+    <!-- Admin -->
+    <string name="admin_title">Admin Panel</string>
+    <string name="tab_pending">Pending</string>
+    <string name="tab_approved">Approved</string>
+    <string name="tab_rejected">Rejected</string>
+    <string name="btn_approve">Approve</string>
+    <string name="btn_reject">Reject</string>
+    <string name="empty_submissions">No submissions</string>
+
+    <!-- General -->
+    <string name="saves_format">%d saves</string>
+    <string name="added_format">Added %s</string>
+    <string name="loading">Loading…</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="default_web_client_id">REPLACE_WITH_YOUR_WEB_CLIENT_ID</string>
+</resources>

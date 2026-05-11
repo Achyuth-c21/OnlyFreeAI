@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Surface Colors (Dark) -->
+    <color name="background_primary">#121212</color>
+    <color name="background_card">#1E1E1E</color>
+    <color name="background_search">#2A2A2A</color>
+    <color name="surface_elevated">#252525</color>
+
+    <!-- Text Colors (Dark) -->
+    <color name="text_primary">#EAEAEA</color>
+    <color name="text_secondary">#AAAAAA</color>
+    <color name="text_hint">#777777</color>
+
+    <!-- Misc -->
+    <color name="divider">#333333</color>
+    <color name="ripple">#1AFFFFFF</color>
+    <color name="shadow">#40000000</color>
+</resources>

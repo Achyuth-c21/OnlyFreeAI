@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/navy_dark"
+            app:navigationIcon="@drawable/ic_home"
+            app:title="Tool Details"
+            app:titleTextColor="@color/white" />
+
+        <!-- Logo and Name Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <ImageView
+                android:id="@+id/img_tool_logo"
+                android:layout_width="@dimen/logo_size_lg"
+                android:layout_height="@dimen/logo_size_lg"
+                android:contentDescription="Tool logo" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/spacing_md">
+
+                <TextView
+                    android:id="@+id/tv_tool_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_xl"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/badge_verified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/verified_free"
+                    style="@style/Badge.Verified"
+                    android:layout_marginTop="@dimen/spacing_xs" />
+
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_sm"
+                    android:textColor="@color/brand_green"
+                    android:layout_marginTop="@dimen/spacing_xs" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tv_tool_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_md"
+            android:textColor="@color/text_secondary"
+            android:lineSpacingMultiplier="1.4"
+            android:paddingHorizontal="@dimen/spacing_lg" />
+
+        <!-- Saves + Date -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_md">
+
+            <TextView
+                android:id="@+id/tv_saves"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_sm"
+                android:textColor="@color/text_hint" />
+
+            <TextView
+                android:id="@+id/tv_date_added"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_sm"
+                android:textColor="@color/text_hint" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginHorizontal="@dimen/spacing_lg" />
+
+        <!-- What's Free Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/whats_free"
+            style="@style/SectionHeader"
+            android:padding="@dimen/spacing_lg"
+            android:paddingBottom="@dimen/spacing_sm" />
+
+        <TextView
+            android:id="@+id/tv_whats_free"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/status_verified"
+            android:lineSpacingMultiplier="1.5"
+            android:paddingHorizontal="@dimen/spacing_lg" />
+
+        <!-- What's NOT Free Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/whats_not_free"
+            style="@style/SectionHeader"
+            android:padding="@dimen/spacing_lg"
+            android:paddingBottom="@dimen/spacing_sm" />
+
+        <TextView
+            android:id="@+id/tv_whats_not_free"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/status_rejected"
+            android:lineSpacingMultiplier="1.5"
+            android:paddingHorizontal="@dimen/spacing_lg" />
+
+        <!-- Best For -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/best_for"
+            style="@style/SectionHeader"
+            android:padding="@dimen/spacing_lg"
+            android:paddingBottom="@dimen/spacing_sm" />
+
+        <TextView
+            android:id="@+id/tv_best_for"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/text_secondary"
+            android:paddingHorizontal="@dimen/spacing_lg" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <Button
+                android:id="@+id/btn_visit_tool"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height"
+                android:text="@string/btn_visit_tool"
+                android:background="@drawable/bg_button_primary"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_save_tool"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height"
+                android:text="@string/btn_save_to_stack"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:backgroundTint="@color/navy_mid"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/btn_gone_paid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_gone_paid"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:layout_gravity="center"
+                android:textColor="@color/status_rejected"
+                android:background="@android:color/transparent"
+                android:textSize="@dimen/text_sm" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

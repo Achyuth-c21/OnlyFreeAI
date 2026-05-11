@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_lg">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_title"
+            android:textSize="@dimen/text_xl"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_subtitle"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_lg" />
+
+        <!-- URL Input -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_url"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_url"
+                android:inputType="textUri"
+                android:background="@drawable/bg_search_bar"
+                android:padding="@dimen/spacing_md"
+                android:textSize="@dimen/text_sm" />
+
+            <Button
+                android:id="@+id/btn_fetch_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_fetch"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:background="@drawable/bg_button_primary"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_sm" />
+        </LinearLayout>
+
+        <!-- Tool Name -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_name"
+            android:maxLength="50"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:background="@drawable/bg_search_bar"
+            android:padding="@dimen/spacing_md"
+            android:textSize="@dimen/text_sm" />
+
+        <!-- Description -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_description"
+            android:maxLength="300"
+            android:minLines="3"
+            android:gravity="top"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:background="@drawable/bg_search_bar"
+            android:padding="@dimen/spacing_md"
+            android:textSize="@dimen/text_sm" />
+
+        <!-- Category -->
+        <Spinner
+            android:id="@+id/spinner_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:background="@drawable/bg_search_bar"
+            android:padding="@dimen/spacing_md" />
+
+        <!-- What's Free -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_whats_free"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_whats_free"
+            android:minLines="3"
+            android:gravity="top"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:background="@drawable/bg_search_bar"
+            android:padding="@dimen/spacing_md"
+            android:textSize="@dimen/text_sm" />
+
+        <!-- Rate limit note -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rate_limit_msg"
+            android:textSize="@dimen/text_xs"
+            android:textColor="@color/text_hint"
+            android:layout_marginTop="@dimen/spacing_sm" />
+
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/btn_height"
+            android:text="@string/btn_submit"
+            android:background="@drawable/bg_button_primary"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/spacing_lg" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:visibility="gone"
+            android:indeterminateTint="@color/brand_green" />
+
+    </LinearLayout>
+</ScrollView>

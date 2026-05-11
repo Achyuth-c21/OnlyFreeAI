@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Brand -->
+    <color name="brand_green">#4CAF50</color>
+    <color name="brand_green_dark">#388E3C</color>
+    <color name="brand_green_light">#81C784</color>
+
+    <!-- Dark Navy Palette -->
+    <color name="navy_dark">#1A1A2E</color>
+    <color name="navy_mid">#16213E</color>
+    <color name="navy_light">#0F3460</color>
+
+    <!-- Surface Colors (Light) -->
+    <color name="background_primary">#FAFAFA</color>
+    <color name="background_card">#FFFFFF</color>
+    <color name="background_search">#F0F0F0</color>
+    <color name="surface_elevated">#FFFFFF</color>
+
+    <!-- Text Colors (Light) -->
+    <color name="text_primary">#1A1A2E</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_hint">#999999</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Status Colors -->
+    <color name="status_verified">#4CAF50</color>
+    <color name="status_pending">#FF9800</color>
+    <color name="status_rejected">#F44336</color>
+
+    <!-- Misc -->
+    <color name="divider">#E0E0E0</color>
+    <color name="ripple">#1A000000</color>
+    <color name="shadow">#14000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>
