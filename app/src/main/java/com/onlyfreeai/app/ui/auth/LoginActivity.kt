@@ -83,13 +83,21 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     lifecycleScope.launch {
-                        viewModel.saveUserToFirestore()
-                        binding.progressBar.hide()
-                        navigateToMain()
+                        try {
+                            viewModel.saveUserToFirestore()
+                        } catch (e: Exception) {
+                            Log.e("LoginActivity", "Firestore error", e)
+                        }
+                        if (!isFinishing && !isDestroyed) {
+                            binding.progressBar.hide()
+                            navigateToMain()
+                        }
                     }
                 } else {
-                    binding.progressBar.hide()
-                    toast("Authentication failed.")
+                    if (!isFinishing && !isDestroyed) {
+                        binding.progressBar.hide()
+                        toast("Authentication failed.")
+                    }
                 }
             }
     }

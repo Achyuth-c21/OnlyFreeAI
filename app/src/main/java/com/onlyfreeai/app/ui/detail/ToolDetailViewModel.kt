@@ -20,6 +20,12 @@ class ToolDetailViewModel : ViewModel() {
     private val _isSaved = MutableLiveData<Boolean>()
     val isSaved: LiveData<Boolean> = _isSaved
 
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
+    private var isTogglingSave = false
+    private var isFlagging = false
+
     fun loadTool(toolId: String) {
         viewModelScope.launch {
             try {
@@ -32,8 +38,11 @@ class ToolDetailViewModel : ViewModel() {
     }
 
     fun toggleSave(toolId: String) {
+        if (isTogglingSave) return
+        isTogglingSave = true
         viewModelScope.launch {
             try {
+                val userId = userRepository.getCurrentUserId() ?: throw Exception("Must be logged in to save tools")
                 val currentlySaved = _isSaved.value ?: false
                 if (currentlySaved) {
                     userRepository.unsaveTool(toolId)
@@ -46,19 +55,27 @@ class ToolDetailViewModel : ViewModel() {
                 // Reload tool to get updated save count
                 _tool.value = toolRepository.getToolById(toolId)
             } catch (e: Exception) {
-                // Handle error
+                _error.value = "Failed to update save status: ${e.message}"
+            } finally {
+                isTogglingSave = false
             }
         }
     }
 
     fun flagAsPaid(toolId: String) {
+        if (isFlagging) return
+        isFlagging = true
         viewModelScope.launch {
             try {
+                val userId = userRepository.getCurrentUserId() ?: throw Exception("Must be logged in to flag tools")
                 // In a full implementation, this would create a report
                 // For v1, we just mark it for admin review
                 toolRepository.updateToolStatus(toolId, "flagged")
+                _error.value = "Tool successfully flagged for review."
             } catch (e: Exception) {
-                // Handle error
+                _error.value = "Failed to flag tool: ${e.message}"
+            } finally {
+                isFlagging = false
             }
         }
     }
