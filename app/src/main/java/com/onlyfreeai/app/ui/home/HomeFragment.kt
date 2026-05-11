@@ -46,15 +46,21 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupAdminButton() {
-        lifecycleScope.launch {
-            val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
-            if (isAdmin) {
-                binding.btnAdmin.show()
-                binding.btnAdmin.setOnClickListener {
-                    startActivity(Intent(requireContext(), com.onlyfreeai.app.ui.admin.AdminActivity::class.java))
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val isAdmin = com.onlyfreeai.app.data.repository.UserRepository().isAdmin()
+                if (_binding == null) return@launch
+                if (isAdmin) {
+                    binding.btnAdmin.show()
+                    binding.btnAdmin.setOnClickListener {
+                        startActivity(Intent(requireContext(), com.onlyfreeai.app.ui.admin.AdminActivity::class.java))
+                    }
+                } else {
+                    binding.btnAdmin.hide()
                 }
-            } else {
-                binding.btnAdmin.hide()
+            } catch (e: Exception) {
+                // Silently handle — admin button just stays hidden
+                if (_binding != null) binding.btnAdmin.hide()
             }
         }
     }
