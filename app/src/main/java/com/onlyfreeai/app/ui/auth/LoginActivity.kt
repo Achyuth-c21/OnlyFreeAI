@@ -77,11 +77,8 @@ class LoginActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         binding.btnGoogleSignIn.setOnClickListener {
             binding.progressBar.show()
-            // Sign out first to force account picker every time
-            googleSignInClient.signOut().addOnCompleteListener {
-                val signInIntent = googleSignInClient.signInIntent
-                signInLauncher.launch(signInIntent)
-            }
+            val signInIntent = googleSignInClient.signInIntent
+            signInLauncher.launch(signInIntent)
         }
     }
 
