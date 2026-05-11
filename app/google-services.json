@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "533784515869-sn9erru35jiqhg9od03uucqh1kracdp1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.onlyfreeai.app",
+            "certificate_hash": "09bb07f47cd0eead274fc43bd30984b19ac95d83"
+          }
+        },
+        {
           "client_id": "533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com",
           "client_type": 3
         }
