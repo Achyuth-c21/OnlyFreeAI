@@ -1,23 +1,15 @@
 {
-  "name": "Android Dev Environment",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
   "customizations": {
     "vscode": {
-      "settings": {
-        "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
-        "kotlin.compiler.jvmTarget": "17"
-      },
       "extensions": [
         "mathiasfrohlich.Kotlin",
-        "vscjava.vscode-java-pack",
-        "naco-siren.gradle-language",
         "redhat.java",
-        "vscjava.vscode-gradle"
+        "vscjava.vscode-gradle",
+        "naco-siren.gradle-language"
       ]
     }
   },
-  "remoteUser": "vscode",
-  "postCreateCommand": "yes | sdkmanager --licenses && chmod +x gradlew"
+  "remoteUser": "codespace",
+  "postCreateCommand": "bash .devcontainer/setup.sh"
 }
