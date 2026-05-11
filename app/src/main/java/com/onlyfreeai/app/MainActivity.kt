@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.homeFragment,
-                R.id.myStackFragment,
-                R.id.submitToolFragment -> {
+                R.id.submitToolFragment,
+                R.id.settingsFragment -> {
                     binding.bottomNavigation.visibility = View.VISIBLE
                 }
                 else -> {

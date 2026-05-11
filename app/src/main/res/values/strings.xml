@@ -5,13 +5,32 @@
 
     <!-- Navigation -->
     <string name="nav_home">Home</string>
-    <string name="nav_my_stack">My Stack</string>
     <string name="nav_submit">Submit</string>
+    <string name="nav_settings">Settings</string>
 
-    <!-- Login -->
+    <!-- Auth -->
+    <string name="sign_in_title">Sign In</string>
+    <string name="sign_up_title">Sign Up</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_confirm_password">Confirm Password</string>
+    <string name="hint_email">Enter email</string>
+    <string name="hint_password">Enter password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="have_account">Already have an account?</string>
+    <string name="or_divider">OR</string>
+    <string name="continue_with_google">Continue with Google</string>
     <string name="login_title">Welcome to OnlyFreeAI</string>
     <string name="login_subtitle">Discover verified free AI tools</string>
     <string name="btn_google_sign_in">Sign in with Google</string>
+    <string name="error_empty_email">Please enter your email</string>
+    <string name="error_empty_password">Please enter your password</string>
+    <string name="error_password_mismatch">Passwords don\'t match</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_sign_in_failed">Sign in failed. Please check your credentials.</string>
+    <string name="error_sign_up_failed">Sign up failed. Please try again.</string>
+    <string name="reset_email_sent">Password reset email sent!</string>
 
     <!-- Home -->
     <string name="search_hint">Search tools or what you want to do…</string>
@@ -29,7 +48,8 @@
     <string name="btn_gone_paid">Gone Paid?</string>
     <string name="verified_free">✓ Verified Free</string>
 
-    <!-- My Stack -->
+    <!-- My Stack (legacy) -->
+    <string name="nav_my_stack">My Stack</string>
     <string name="my_stack_title">My Stack</string>
     <string name="empty_stack">Your stack is empty</string>
     <string name="empty_stack_subtitle">Save tools from the home screen</string>
@@ -45,6 +65,19 @@
     <string name="hint_whats_free">What\'s free? (one item per line)</string>
     <string name="btn_submit">Submit for Review</string>
     <string name="rate_limit_msg">Max 3 submissions per day</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_profile">Profile</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System Default</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_logout">Log Out</string>
+    <string name="settings_logout_confirm">Are you sure you want to log out?</string>
+    <string name="settings_version">Version</string>
 
     <!-- Admin -->
     <string name="admin_title">Admin Panel</string>

@@ -12,15 +12,15 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/myStackFragment"
-        android:name="com.onlyfreeai.app.ui.stack.MyStackFragment"
-        android:label="My Stack"
-        tools:layout="@layout/fragment_my_stack" />
-
-    <fragment
         android:id="@+id/submitToolFragment"
         android:name="com.onlyfreeai.app.ui.submit.SubmitToolFragment"
         android:label="Submit"
         tools:layout="@layout/fragment_submit_tool" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.onlyfreeai.app.ui.settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
 
 </navigation>

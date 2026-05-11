@@ -2,19 +2,30 @@
 <resources>
     <!-- Base App Theme (Light) -->
     <style name="Theme.OnlyFreeAI" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/brand_green</item>
-        <item name="colorPrimaryDark">@color/brand_green_dark</item>
-        <item name="colorAccent">@color/brand_green</item>
+        <item name="colorPrimary">@color/brand_pink</item>
+        <item name="colorPrimaryDark">@color/brand_pink_dark</item>
+        <item name="colorAccent">@color/brand_pink</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:colorBackground">@color/background_primary</item>
-        <item name="android:statusBarColor">@color/navy_dark</item>
+        <item name="android:statusBarColor">@color/brand_pink</item>
         <item name="android:navigationBarColor">@color/background_primary</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <!-- Splash / Login Theme -->
     <style name="Theme.OnlyFreeAI.Splash" parent="Theme.OnlyFreeAI">
+        <item name="android:statusBarColor">@color/brand_pink</item>
+        <item name="android:colorBackground">@color/brand_pink</item>
+    </style>
+
+    <!-- Dark Theme -->
+    <style name="Theme.OnlyFreeAI.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/brand_pink</item>
+        <item name="colorPrimaryDark">@color/brand_pink_dark</item>
+        <item name="colorAccent">@color/brand_pink</item>
+        <item name="colorOnPrimary">@color/white</item>
         <item name="android:statusBarColor">@color/navy_dark</item>
-        <item name="android:colorBackground">@color/navy_dark</item>
+        <item name="android:navigationBarColor">@color/navy_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

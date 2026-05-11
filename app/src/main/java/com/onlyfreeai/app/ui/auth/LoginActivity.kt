@@ -3,6 +3,7 @@ package com.onlyfreeai.app.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var viewModel: LoginViewModel
     private lateinit var googleSignInClient: GoogleSignInClient
     private val auth = FirebaseAuth.getInstance()
+
+    private var isSignUpMode = false
 
     private val signInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -63,6 +66,7 @@ class LoginActivity : AppCompatActivity() {
 
         setupGoogleSignIn()
         setupClickListeners()
+        updateUI()
     }
 
     private fun setupGoogleSignIn() {
@@ -75,11 +79,109 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
+        // Google Sign-In
         binding.btnGoogleSignIn.setOnClickListener {
             binding.progressBar.show()
             val signInIntent = googleSignInClient.signInIntent
             signInLauncher.launch(signInIntent)
         }
+
+        // Email/Password action (Sign In or Sign Up)
+        binding.btnAction.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
+
+            if (email.isEmpty()) {
+                toast(getString(R.string.error_empty_email))
+                return@setOnClickListener
+            }
+            if (password.isEmpty()) {
+                toast(getString(R.string.error_empty_password))
+                return@setOnClickListener
+            }
+            if (password.length < 6) {
+                toast(getString(R.string.error_password_short))
+                return@setOnClickListener
+            }
+
+            if (isSignUpMode) {
+                val confirmPassword = binding.etConfirmPassword.text.toString().trim()
+                if (password != confirmPassword) {
+                    toast(getString(R.string.error_password_mismatch))
+                    return@setOnClickListener
+                }
+                signUpWithEmail(email, password)
+            } else {
+                signInWithEmail(email, password)
+            }
+        }
+
+        // Toggle Sign In / Sign Up
+        binding.tvSwitchAction.setOnClickListener {
+            isSignUpMode = !isSignUpMode
+            updateUI()
+        }
+
+        // Forgot Password
+        binding.tvForgotPassword.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            if (email.isEmpty()) {
+                toast(getString(R.string.error_empty_email))
+                return@setOnClickListener
+            }
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        toast(getString(R.string.reset_email_sent))
+                    } else {
+                        toast(task.exception?.message ?: getString(R.string.error_generic))
+                    }
+                }
+        }
+    }
+
+    private fun updateUI() {
+        if (isSignUpMode) {
+            binding.tvTitle.text = getString(R.string.sign_up_title)
+            binding.btnAction.text = getString(R.string.sign_up_title)
+            binding.layoutConfirmPassword.visibility = View.VISIBLE
+            binding.tvForgotPassword.visibility = View.GONE
+            binding.tvSwitchLabel.text = getString(R.string.have_account)
+            binding.tvSwitchAction.text = getString(R.string.sign_in_title)
+        } else {
+            binding.tvTitle.text = getString(R.string.sign_in_title)
+            binding.btnAction.text = getString(R.string.sign_in_title)
+            binding.layoutConfirmPassword.visibility = View.GONE
+            binding.tvForgotPassword.visibility = View.VISIBLE
+            binding.tvSwitchLabel.text = getString(R.string.no_account)
+            binding.tvSwitchAction.text = getString(R.string.sign_up_title)
+        }
+    }
+
+    private fun signInWithEmail(email: String, password: String) {
+        binding.progressBar.show()
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    onAuthSuccess()
+                } else {
+                    binding.progressBar.hide()
+                    toast(task.exception?.message ?: getString(R.string.error_sign_in_failed))
+                }
+            }
+    }
+
+    private fun signUpWithEmail(email: String, password: String) {
+        binding.progressBar.show()
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    onAuthSuccess()
+                } else {
+                    binding.progressBar.hide()
+                    toast(task.exception?.message ?: getString(R.string.error_sign_up_failed))
+                }
+            }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
@@ -87,17 +189,7 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    lifecycleScope.launch {
-                        try {
-                            viewModel.saveUserToFirestore()
-                        } catch (e: Exception) {
-                            Log.e("LoginActivity", "Firestore save error", e)
-                        }
-                        if (!isFinishing && !isDestroyed) {
-                            binding.progressBar.hide()
-                            navigateToMain()
-                        }
-                    }
+                    onAuthSuccess()
                 } else {
                     Log.e("LoginActivity", "signInWithCredential failed", task.exception)
                     if (!isFinishing && !isDestroyed) {
@@ -106,6 +198,20 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    private fun onAuthSuccess() {
+        lifecycleScope.launch {
+            try {
+                viewModel.saveUserToFirestore()
+            } catch (e: Exception) {
+                Log.e("LoginActivity", "Firestore save error", e)
+            }
+            if (!isFinishing && !isDestroyed) {
+                binding.progressBar.hide()
+                navigateToMain()
+            }
+        }
     }
 
     private fun navigateToMain() {

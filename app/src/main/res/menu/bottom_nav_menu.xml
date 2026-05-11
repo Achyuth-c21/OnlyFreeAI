@@ -5,11 +5,11 @@
         android:icon="@drawable/ic_home"
         android:title="@string/nav_home" />
     <item
-        android:id="@+id/myStackFragment"
-        android:icon="@drawable/ic_stack"
-        android:title="@string/nav_my_stack" />
-    <item
         android:id="@+id/submitToolFragment"
         android:icon="@drawable/ic_submit"
         android:title="@string/nav_submit" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/nav_settings" />
 </menu>
