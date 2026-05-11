@@ -1,15 +1,68 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "name": "OnlyFreeAI",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+
+  // ── Environment ──────────────────────────────────────────
+  "remoteEnv": {
+    "ANDROID_HOME": "/opt/android-sdk",
+    "ANDROID_SDK_ROOT": "/opt/android-sdk",
+    "PATH": "${containerEnv:PATH}:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/build-tools/34.0.0"
+  },
+
+  // ── VS Code Customizations ───────────────────────────────
   "customizations": {
     "vscode": {
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "kotlin.debugAdapter.enabled": true,
+        "files.eol": "\n",
+        "files.trimTrailingWhitespace": true,
+        "[kotlin]": {
+          "editor.defaultFormatter": "fwcd.kotlin"
+        },
+        "[xml]": {
+          "editor.defaultFormatter": "redhat.vscode-xml"
+        }
+      },
       "extensions": [
+        // Kotlin & Android
+        "fwcd.kotlin",
         "mathiasfrohlich.Kotlin",
-        "redhat.java",
         "vscjava.vscode-gradle",
-        "naco-siren.gradle-language"
+
+        // XML (Android layouts, manifests)
+        "redhat.vscode-xml",
+
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+
+        // General DX
+        "esbenp.prettier-vscode",
+        "usernamehw.errorlens",
+        "gruntfuggly.todo-tree",
+        "EditorConfig.EditorConfig",
+
+        // Firebase
+        "toba.vsfire"
       ]
     }
   },
-  "remoteUser": "codespace",
-  "postCreateCommand": "bash .devcontainer/setup.sh"
+
+  // ── Features ─────────────────────────────────────────────
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // ── Lifecycle ────────────────────────────────────────────
+  // Make gradlew executable on container start (no installs needed)
+  "postStartCommand": "chmod +x gradlew 2>/dev/null || true",
+
+  // ── User ─────────────────────────────────────────────────
+  "remoteUser": "vscode"
 }
