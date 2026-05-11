@@ -21,8 +21,8 @@
         android:layout_height="@dimen/bottom_nav_height"
         android:background="@color/surface_elevated"
         app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/brand_green"
-        app:itemTextColor="@color/text_primary"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:labelVisibilityMode="labeled" />
 
 </LinearLayout>

@@ -15,8 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/bg_gradient"
-            android:padding="@dimen/spacing_md"
+            android:background="@android:color/transparent"
+            android:padding="24dp"
             android:gravity="center_vertical">
 
             <LinearLayout
@@ -29,36 +29,39 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
-                    android:textSize="@dimen/text_xl"
-                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textColor="@color/text_primary"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/tagline"
-                    android:textSize="@dimen/text_sm"
-                    android:textColor="@color/brand_green_light"
-                    android:layout_marginTop="@dimen/spacing_xs" />
+                    android:text="Only Free. Only AI."
+                    android:textSize="14sp"
+                    android:textColor="@color/text_hint"
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/btn_admin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:src="@drawable/ic_admin"
                 android:contentDescription="Admin Panel"
                 android:visibility="gone"
-                android:padding="@dimen/spacing_sm"
-                android:background="?attr/selectableItemBackgroundBorderless" />
+                android:padding="12dp"
+                android:background="@drawable/bg_settings_icon"
+                app:tint="@color/text_primary" />
         </LinearLayout>
 
         <!-- Search Bar -->
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_md"
+            android:layout_height="64dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/bg_search_bar"
             app:queryHint="@string/search_hint"
             app:iconifiedByDefault="false"
@@ -70,8 +73,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginEnd="@dimen/spacing_md"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp" />
 
         <!-- Tool List -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -85,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="@dimen/spacing_md" />
+                android:paddingBottom="24dp" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -99,11 +102,19 @@
             android:orientation="vertical"
             android:visibility="gone">
 
+            <!-- Adding a placeholder box icon for illustration -->
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@android:drawable/ic_dialog_info"
+                app:tint="@color/brand_primary_light"
+                android:layout_marginBottom="24dp"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_tools"
-                android:textSize="@dimen/text_lg"
+                android:textSize="20sp"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
 
@@ -111,9 +122,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_tools_subtitle"
-                android:textSize="@dimen/text_sm"
+                android:textSize="14sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginTop="@dimen/spacing_sm" />
+                android:layout_marginTop="8dp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -124,6 +135,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:indeterminateTint="@color/brand_green" />
+        android:indeterminateTint="@color/brand_primary" />
 
 </FrameLayout>
