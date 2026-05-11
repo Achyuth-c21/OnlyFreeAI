@@ -2,7 +2,7 @@
 # OnlyFreeAI — Codespace Dockerfile
 # Everything baked in. Zero setup on open.
 # ──────────────────────────────────────────────────────────────
-FROM mcr.microsoft.com/devcontainers/java:17-bullseye
+FROM mcr.microsoft.com/devcontainers/java:17-bookworm
 
 # ── Environment Variables ────────────────────────────────────
 ENV ANDROID_HOME=/opt/android-sdk \
@@ -11,7 +11,10 @@ ENV ANDROID_HOME=/opt/android-sdk \
 ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/build-tools/34.0.0"
 
 # ── System Dependencies ─────────────────────────────────────
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Remove any stale third-party apt sources that may have expired GPG keys
+RUN find /etc/apt/sources.list.d/ -type f -name '*.list' -exec sh -c \
+    'grep -qi "yarn\|nodesource" "$1" && rm -f "$1" || true' _ {} \; 2>/dev/null; \
+    apt-get update && apt-get install -y --no-install-recommends \
     wget \
     unzip \
     git \
@@ -43,11 +46,6 @@ RUN sdkmanager --install \
 # ── Fix Permissions for vscode user ─────────────────────────
 RUN chown -R vscode:vscode ${ANDROID_HOME} \
     && mkdir -p ${GRADLE_USER_HOME} \
-    && chown -R vscode:vscode ${GRADLE_USER_HOME}
-
-# ── Pre-download Gradle Distribution ────────────────────────
-# Gradle 8.6 as specified in gradle-wrapper.properties
-RUN mkdir -p ${GRADLE_USER_HOME}/wrapper/dists \
     && chown -R vscode:vscode ${GRADLE_USER_HOME}
 
 # ── Switch to non-root user ─────────────────────────────────
