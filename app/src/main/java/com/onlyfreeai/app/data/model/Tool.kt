@@ -29,5 +29,6 @@ data class Tool(
         const val STATUS_PENDING = "pending"
         const val STATUS_REJECTED = "rejected"
         const val STATUS_REMOVED = "removed"
+        const val STATUS_FLAGGED = "flagged"
     }
 }

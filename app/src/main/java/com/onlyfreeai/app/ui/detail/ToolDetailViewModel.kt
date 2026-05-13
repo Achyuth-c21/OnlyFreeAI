@@ -23,6 +23,9 @@ class ToolDetailViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> = _message
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -77,8 +80,8 @@ class ToolDetailViewModel : ViewModel() {
                 if (userRepository.getCurrentUserId() == null) throw Exception("Must be logged in to flag tools")
                 // In a full implementation, this would create a report
                 // For v1, we just mark it for admin review
-                toolRepository.updateToolStatus(toolId, "flagged")
-                _error.value = "Tool successfully flagged for review."
+                toolRepository.updateToolStatus(toolId, Tool.STATUS_FLAGGED)
+                _message.value = "Tool successfully flagged for review."
             } catch (e: Exception) {
                 _error.value = "Failed to flag tool: ${e.message}"
             } finally {

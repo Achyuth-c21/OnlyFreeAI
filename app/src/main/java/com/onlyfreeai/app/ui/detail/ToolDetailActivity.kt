@@ -88,5 +88,11 @@ class ToolDetailActivity : AppCompatActivity() {
                 toast(errorMsg)
             }
         }
+
+        viewModel.message.observe(this) { msg ->
+            if (msg.isNotBlank()) {
+                toast(msg)
+            }
+        }
     }
 }

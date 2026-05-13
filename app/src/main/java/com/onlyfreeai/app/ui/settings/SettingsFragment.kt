@@ -70,6 +70,7 @@ class SettingsFragment : Fragment() {
                         else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                     }
                     AppCompatDelegate.setDefaultNightMode(mode)
+                    requireContext().getSharedPreferences(com.onlyfreeai.app.util.Constants.PREFS_NAME, android.content.Context.MODE_PRIVATE).edit().putInt(com.onlyfreeai.app.util.Constants.PREF_DARK_MODE, mode).apply()
                     updateThemeLabel()
                     dialog.dismiss()
                 }

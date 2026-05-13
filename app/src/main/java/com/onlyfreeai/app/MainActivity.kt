@@ -44,7 +44,8 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.homeFragment,
                 R.id.submitToolFragment,
-                R.id.settingsFragment -> {
+                R.id.settingsFragment,
+                R.id.myStackFragment -> {
                     binding.bottomNavigation.visibility = View.VISIBLE
                 }
                 else -> {

@@ -15,6 +15,9 @@ class OnlyFreeAIApp : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
+        val prefs = getSharedPreferences(com.onlyfreeai.app.util.Constants.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(prefs.getInt(com.onlyfreeai.app.util.Constants.PREF_DARK_MODE, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
+
         // Enable Firestore offline persistence (modern API)
         try {
             val settings = FirebaseFirestoreSettings.Builder()

@@ -39,7 +39,7 @@ fun ImageView.loadUrlRounded(url: String?, radius: Int = 16) {
     Glide.with(this.context)
         .load(url)
         .transition(DrawableTransitionOptions.withCrossFade(300))
-        .circleCrop()
+        .transform(com.bumptech.glide.load.resource.bitmap.RoundedCorners(radius))
         .into(this)
 }
 

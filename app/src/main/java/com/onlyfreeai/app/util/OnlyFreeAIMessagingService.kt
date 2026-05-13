@@ -9,6 +9,10 @@ import com.onlyfreeai.app.R
 
 class OnlyFreeAIMessagingService : FirebaseMessagingService() {
 
+    companion object {
+        private val notificationId = java.util.concurrent.atomic.AtomicInteger(0)
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
@@ -21,7 +25,7 @@ class OnlyFreeAIMessagingService : FirebaseMessagingService() {
                 .setAutoCancel(true)
 
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.notify(System.currentTimeMillis().toInt(), builder.build())
+            manager.notify(notificationId.incrementAndGet(), builder.build())
         }
     }
 
