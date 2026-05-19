@@ -28,7 +28,8 @@ class LoginViewModel : ViewModel() {
                 userRepository.createOrUpdateUser(newUser)
             }
         } catch (e: Exception) {
-            // Silently fail — user will be created on next interaction
+            android.util.Log.e("LoginViewModel", "Failed to save user to Firestore", e)
+            throw e // Propagate so caller can show appropriate feedback
         }
     }
 }

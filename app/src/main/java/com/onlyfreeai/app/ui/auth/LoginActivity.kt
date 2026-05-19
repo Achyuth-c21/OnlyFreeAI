@@ -3,6 +3,7 @@ package com.onlyfreeai.app.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -40,12 +41,12 @@ class LoginActivity : AppCompatActivity() {
             val account = task.getResult(ApiException::class.java)
             account.idToken?.let { firebaseAuthWithGoogle(it) }
                 ?: run {
-                    binding.progressBar.hide()
+                    setAuthLoading(false)
                     toast("Sign in failed: no ID token received.")
                 }
         } catch (e: ApiException) {
             Log.e("LoginActivity", "Google sign in failed, code=${e.statusCode}", e)
-            binding.progressBar.hide()
+            setAuthLoading(false)
             toast("Sign in failed (code ${e.statusCode}). Please try again.")
         }
     }
@@ -81,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         // Google Sign-In
         binding.btnGoogleSignIn.setOnClickListener {
-            binding.progressBar.show()
+            setAuthLoading(true)
             val signInIntent = googleSignInClient.signInIntent
             signInLauncher.launch(signInIntent)
         }
@@ -93,6 +94,10 @@ class LoginActivity : AppCompatActivity() {
 
             if (email.isEmpty()) {
                 toast(getString(R.string.error_empty_email))
+                return@setOnClickListener
+            }
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                toast("Please enter a valid email address")
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
@@ -129,6 +134,10 @@ class LoginActivity : AppCompatActivity() {
                 toast(getString(R.string.error_empty_email))
                 return@setOnClickListener
             }
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                toast("Please enter a valid email address")
+                return@setOnClickListener
+            }
             auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -159,26 +168,26 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signInWithEmail(email: String, password: String) {
-        binding.progressBar.show()
+        setAuthLoading(true)
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     onAuthSuccess()
                 } else {
-                    binding.progressBar.hide()
+                    setAuthLoading(false)
                     toast(task.exception?.message ?: getString(R.string.error_sign_in_failed))
                 }
             }
     }
 
     private fun signUpWithEmail(email: String, password: String) {
-        binding.progressBar.show()
+        setAuthLoading(true)
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     onAuthSuccess()
                 } else {
-                    binding.progressBar.hide()
+                    setAuthLoading(false)
                     toast(task.exception?.message ?: getString(R.string.error_sign_up_failed))
                 }
             }
@@ -193,7 +202,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     Log.e("LoginActivity", "signInWithCredential failed", task.exception)
                     if (!isFinishing && !isDestroyed) {
-                        binding.progressBar.hide()
+                        setAuthLoading(false)
                         toast("Authentication failed: ${task.exception?.message}")
                     }
                 }
@@ -206,12 +215,25 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.saveUserToFirestore()
             } catch (e: Exception) {
                 Log.e("LoginActivity", "Firestore save error", e)
+                // Still navigate — user IS authenticated, just warn about sync
+                if (!isFinishing && !isDestroyed) {
+                    toast("Signed in, but profile sync failed. It will retry.")
+                }
             }
             if (!isFinishing && !isDestroyed) {
-                binding.progressBar.hide()
+                setAuthLoading(false)
                 navigateToMain()
             }
         }
+    }
+
+    /** Disable all interactive elements during auth to prevent double-tap */
+    private fun setAuthLoading(loading: Boolean) {
+        binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+        binding.btnAction.isEnabled = !loading
+        binding.btnGoogleSignIn.isEnabled = !loading
+        binding.tvSwitchAction.isEnabled = !loading
+        binding.tvForgotPassword.isEnabled = !loading
     }
 
     private fun navigateToMain() {

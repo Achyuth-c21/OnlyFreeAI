@@ -13,3 +13,7 @@ node_modules/
 prd.js
 package.json
 package-lock.json
+
+# Sensitive files — do NOT commit
+app/google-services.json
+release.keystore

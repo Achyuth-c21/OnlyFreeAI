@@ -1,19 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read/write their own profile
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null;
+
+    // Helper: check if the requesting user is an admin
+    function isAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-    // Tools are readable by all authenticated users
+
+    // Users can read/write their own profile; any authenticated user can read others
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Tools are readable by all authenticated users; only admins can write
     match /tools/{toolId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
-    // Submissions are readable/writable by authenticated users
+
+    // Submissions: any authenticated user can create; only admins can update/delete
     match /submissions/{submissionId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin();
     }
   }
 }

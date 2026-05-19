@@ -23,11 +23,16 @@ android {
     signingConfigs {
         create("release") {
             val keystoreFile = file("../release.keystore")
+            val localProps = java.util.Properties()
+            val localPropsFile = rootProject.file("local.properties")
+            if (localPropsFile.exists()) {
+                localProps.load(localPropsFile.inputStream())
+            }
             if (keystoreFile.exists()) {
                 storeFile = keystoreFile
-                storePassword = "onlyfreeai123"
-                keyAlias = "release"
-                keyPassword = "onlyfreeai123"
+                storePassword = localProps.getProperty("RELEASE_STORE_PASSWORD", "")
+                keyAlias = localProps.getProperty("RELEASE_KEY_ALIAS", "release")
+                keyPassword = localProps.getProperty("RELEASE_KEY_PASSWORD", "")
                 enableV1Signing = true
                 enableV2Signing = true
             }

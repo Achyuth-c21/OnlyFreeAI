@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.FragmentSettingsBinding
@@ -19,6 +21,12 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val auth = FirebaseAuth.getInstance()
+    private val googleSignInClient by lazy {
+        GoogleSignIn.getClient(
+            requireContext(),
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -115,6 +123,8 @@ class SettingsFragment : Fragment() {
                 .setMessage(getString(R.string.settings_logout_confirm))
                 .setPositiveButton(getString(R.string.settings_logout)) { _, _ ->
                     auth.signOut()
+                    // Also revoke Google session so account picker shows next time
+                    googleSignInClient.signOut()
                     val intent = Intent(requireContext(), LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
