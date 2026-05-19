@@ -24,7 +24,10 @@ class SettingsFragment : Fragment() {
     private val googleSignInClient by lazy {
         GoogleSignIn.getClient(
             requireContext(),
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com")
+                .requestEmail()
+                .build()
         )
     }
 
@@ -122,12 +125,14 @@ class SettingsFragment : Fragment() {
                 .setTitle(getString(R.string.settings_logout))
                 .setMessage(getString(R.string.settings_logout_confirm))
                 .setPositiveButton(getString(R.string.settings_logout)) { _, _ ->
+                    // Sign out from Firebase first
                     auth.signOut()
-                    // Also revoke Google session so account picker shows next time
-                    googleSignInClient.signOut()
-                    val intent = Intent(requireContext(), LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
+                    // Revoke Google access so account picker shows next time
+                    googleSignInClient.revokeAccess().addOnCompleteListener {
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                    }
                 }
                 .setNegativeButton("Cancel", null)
                 .show()

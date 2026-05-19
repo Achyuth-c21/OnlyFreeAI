@@ -26,6 +26,21 @@ import com.onlyfreeai.app.util.toast
 @Suppress("DEPRECATION")
 class LoginActivity : AppCompatActivity() {
 
+    companion object {
+        private const val TAG = "LoginActivity"
+
+        /**
+         * The Web Client ID from your google-services.json (client_type: 3).
+         * This MUST match exactly — it is the OAuth 2.0 Web Client ID from
+         * Google Cloud Console → Credentials, NOT the Android client ID.
+         *
+         * If R.string.default_web_client_id is auto-generated and correct,
+         * this constant acts as a fallback / explicit override.
+         */
+        private const val WEB_CLIENT_ID =
+            "533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com"
+    }
+
     private lateinit var binding: ActivityLoginBinding
     private lateinit var viewModel: LoginViewModel
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -36,18 +51,37 @@ class LoginActivity : AppCompatActivity() {
     private val signInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        val data = result.data
+        if (data == null) {
+            Log.w(TAG, "Google sign-in cancelled (no data returned)")
+            setAuthLoading(false)
+            toast("Sign in cancelled.")
+            return@registerForActivityResult
+        }
+
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
             val account = task.getResult(ApiException::class.java)
-            account.idToken?.let { firebaseAuthWithGoogle(it) }
-                ?: run {
-                    setAuthLoading(false)
-                    toast("Sign in failed: no ID token received.")
-                }
+            val idToken = account?.idToken
+            if (idToken != null) {
+                firebaseAuthWithGoogle(idToken)
+            } else {
+                Log.e(TAG, "Google sign-in succeeded but no ID token was returned.")
+                setAuthLoading(false)
+                toast("Sign in failed: no ID token received.")
+            }
         } catch (e: ApiException) {
-            Log.e("LoginActivity", "Google sign in failed, code=${e.statusCode}", e)
+            Log.e(TAG, "Google sign-in failed, statusCode=${e.statusCode}, message=${e.message}", e)
             setAuthLoading(false)
-            toast("Sign in failed (code ${e.statusCode}). Please try again.")
+
+            val userMsg = when (e.statusCode) {
+                10 -> "Configuration error. Please contact support. (Code 10)"
+                7  -> "Network error. Please check your connection."
+                12501 -> "Sign in cancelled."
+                12502 -> "Sign in is already in progress."
+                else -> "Sign in failed (code ${e.statusCode}). Please try again."
+            }
+            toast(userMsg)
         }
     }
 
@@ -71,8 +105,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupGoogleSignIn() {
+        // Use the hardcoded Web Client ID directly.
+        // This avoids the problem where R.string.default_web_client_id is either
+        // missing or maps to the wrong value.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestIdToken(WEB_CLIENT_ID)
             .requestEmail()
             .build()
 
@@ -83,8 +120,11 @@ class LoginActivity : AppCompatActivity() {
         // Google Sign-In
         binding.btnGoogleSignIn.setOnClickListener {
             setAuthLoading(true)
-            val signInIntent = googleSignInClient.signInIntent
-            signInLauncher.launch(signInIntent)
+            // Sign out of the previous Google session first so the account picker always shows
+            googleSignInClient.signOut().addOnCompleteListener {
+                val signInIntent = googleSignInClient.signInIntent
+                signInLauncher.launch(signInIntent)
+            }
         }
 
         // Email/Password action (Sign In or Sign Up)
@@ -138,12 +178,16 @@ class LoginActivity : AppCompatActivity() {
                 toast("Please enter a valid email address")
                 return@setOnClickListener
             }
+            setAuthLoading(true)
             auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task ->
+                    setAuthLoading(false)
                     if (task.isSuccessful) {
                         toast(getString(R.string.reset_email_sent))
                     } else {
-                        toast(task.exception?.message ?: getString(R.string.error_generic))
+                        val errorMsg = task.exception?.localizedMessage
+                            ?: getString(R.string.error_generic)
+                        toast(errorMsg)
                     }
                 }
         }
@@ -175,7 +219,10 @@ class LoginActivity : AppCompatActivity() {
                     onAuthSuccess()
                 } else {
                     setAuthLoading(false)
-                    toast(task.exception?.message ?: getString(R.string.error_sign_in_failed))
+                    val errorMsg = task.exception?.localizedMessage
+                        ?: getString(R.string.error_sign_in_failed)
+                    Log.e(TAG, "Email sign-in failed: $errorMsg", task.exception)
+                    toast(errorMsg)
                 }
             }
     }
@@ -188,7 +235,10 @@ class LoginActivity : AppCompatActivity() {
                     onAuthSuccess()
                 } else {
                     setAuthLoading(false)
-                    toast(task.exception?.message ?: getString(R.string.error_sign_up_failed))
+                    val errorMsg = task.exception?.localizedMessage
+                        ?: getString(R.string.error_sign_up_failed)
+                    Log.e(TAG, "Email sign-up failed: $errorMsg", task.exception)
+                    toast(errorMsg)
                 }
             }
     }
@@ -200,10 +250,10 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     onAuthSuccess()
                 } else {
-                    Log.e("LoginActivity", "signInWithCredential failed", task.exception)
+                    Log.e(TAG, "signInWithCredential failed", task.exception)
                     if (!isFinishing && !isDestroyed) {
                         setAuthLoading(false)
-                        toast("Authentication failed: ${task.exception?.message}")
+                        toast("Authentication failed: ${task.exception?.localizedMessage}")
                     }
                 }
             }
@@ -214,7 +264,7 @@ class LoginActivity : AppCompatActivity() {
             try {
                 viewModel.saveUserToFirestore()
             } catch (e: Exception) {
-                Log.e("LoginActivity", "Firestore save error", e)
+                Log.e(TAG, "Firestore save error", e)
                 // Still navigate — user IS authenticated, just warn about sync
                 if (!isFinishing && !isDestroyed) {
                     toast("Signed in, but profile sync failed. It will retry.")
