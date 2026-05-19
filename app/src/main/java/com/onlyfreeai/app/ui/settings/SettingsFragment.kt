@@ -15,6 +15,7 @@ import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.FragmentSettingsBinding
 import com.onlyfreeai.app.ui.auth.LoginActivity
 
+@Suppress("DEPRECATION")
 class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
