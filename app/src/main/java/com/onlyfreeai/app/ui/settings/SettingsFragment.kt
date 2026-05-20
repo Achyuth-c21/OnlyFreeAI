@@ -126,8 +126,19 @@ class SettingsFragment : Fragment() {
                 .setTitle(getString(R.string.settings_logout))
                 .setMessage(getString(R.string.settings_logout_confirm))
                 .setPositiveButton(getString(R.string.settings_logout)) { _, _ ->
-                    // Sign out from Firebase first
+                    // Clear local preferences (theme preference is kept intentionally)
+                    requireContext().getSharedPreferences(
+                        com.onlyfreeai.app.util.Constants.PREFS_NAME,
+                        android.content.Context.MODE_PRIVATE
+                    ).edit().clear().apply()
+
+                    // Clear Firestore offline cache to remove previous user's data
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .clearPersistence()
+
+                    // Sign out from Firebase
                     auth.signOut()
+
                     // Revoke Google access so account picker shows next time
                     googleSignInClient.revokeAccess().addOnCompleteListener {
                         val intent = Intent(requireContext(), LoginActivity::class.java)

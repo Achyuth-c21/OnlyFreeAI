@@ -182,12 +182,10 @@ class LoginActivity : AppCompatActivity() {
             auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task ->
                     setAuthLoading(false)
-                    if (task.isSuccessful) {
-                        toast(getString(R.string.reset_email_sent))
-                    } else {
-                        val errorMsg = task.exception?.localizedMessage
-                            ?: getString(R.string.error_generic)
-                        toast(errorMsg)
+                    // Always show generic message to prevent email enumeration
+                    toast("If an account exists with this email, a reset link has been sent.")
+                    if (!task.isSuccessful) {
+                        Log.w(TAG, "Password reset request failed", task.exception)
                     }
                 }
         }

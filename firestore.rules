@@ -8,10 +8,17 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Users can read/write their own profile; any authenticated user can read others
+    // Users can read/write their own profile, but CANNOT change isAdmin
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      // New users must have isAdmin = false (prevents self-promotion)
+      allow create: if request.auth != null 
+        && request.auth.uid == userId
+        && request.resource.data.isAdmin == false;
+      // Existing users cannot change their isAdmin field
+      allow update: if request.auth != null 
+        && request.auth.uid == userId
+        && request.resource.data.isAdmin == resource.data.isAdmin;
     }
 
     // Tools are readable by all authenticated users; only admins can write
