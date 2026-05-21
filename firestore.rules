@@ -21,16 +21,28 @@ service cloud.firestore {
         && request.resource.data.isAdmin == resource.data.isAdmin;
     }
 
-    // Tools are readable by all authenticated users; only admins can write
+    // Tools are readable by all authenticated users; admins can create/delete; users can increment/decrement saves or flag tools
     match /tools/{toolId} {
       allow read: if request.auth != null;
-      allow write: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (request.auth != null 
+            && (
+              // Users can only increment or decrement the saves count by exactly 1
+              (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['saves'])
+               && (request.resource.data.saves == resource.data.saves + 1 || request.resource.data.saves == resource.data.saves - 1))
+              ||
+              // Users can only update status to flagged when it was previously live
+              (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+               && request.resource.data.status == 'flagged'
+               && resource.data.status == 'live')
+            ));
     }
 
-    // Submissions: any authenticated user can create; only admins can update/delete
+    // Submissions: users can create their own and read their own; only admins can read all, update, or delete
     match /submissions/{submissionId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      allow read: if request.auth != null && (request.auth.uid == resource.data.submittedBy || isAdmin());
+      allow create: if request.auth != null && request.resource.data.submittedBy == request.auth.uid;
       allow update, delete: if isAdmin();
     }
   }

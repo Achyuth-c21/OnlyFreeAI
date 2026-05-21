@@ -160,7 +160,7 @@ class SettingsFragment : Fragment() {
                     requireContext().getSharedPreferences(
                         com.onlyfreeai.app.util.Constants.PREFS_NAME,
                         android.content.Context.MODE_PRIVATE
-                    ).edit().clear().apply()
+                    ).edit().remove(com.onlyfreeai.app.util.Constants.PREF_ONBOARDED).apply()
 
                     // Clear Firestore offline cache to remove previous user's data
                     com.google.firebase.firestore.FirebaseFirestore.getInstance()
