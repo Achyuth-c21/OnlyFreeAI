@@ -153,7 +153,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/divider"
-                        android:layout_verticalGravity="center"
                         android:layout_marginVertical="14dp" />
 
                     <!-- Saves + Date added details row -->
