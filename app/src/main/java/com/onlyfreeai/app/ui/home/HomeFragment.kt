@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyfreeai.app.databinding.FragmentHomeBinding
+import com.onlyfreeai.app.R
 import com.onlyfreeai.app.ui.detail.ToolDetailActivity
 import com.onlyfreeai.app.util.Constants
 import com.onlyfreeai.app.util.hide
