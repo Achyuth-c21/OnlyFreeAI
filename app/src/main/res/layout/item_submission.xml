@@ -1,110 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/spacing_md"
-    android:layout_marginBottom="@dimen/spacing_sm"
-    android:background="@drawable/bg_card"
-    android:padding="@dimen/card_padding">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardBackgroundColor="@color/background_card"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/divider">
 
-    <ImageView
-        android:id="@+id/img_logo"
-        android:layout_width="@dimen/logo_size_sm"
-        android:layout_height="@dimen/logo_size_sm"
-        android:contentDescription="Logo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="@dimen/text_md"
-        android:textColor="@color/text_primary"
-        android:layout_marginStart="@dimen/spacing_sm"
-        app:layout_constraintStart_toEndOf="@id/img_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="@dimen/card_padding">
 
-    <TextView
-        android:id="@+id/tv_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/text_sm"
-        android:textColor="@color/text_secondary"
-        android:maxLines="2"
-        android:layout_marginStart="@dimen/spacing_sm"
-        android:layout_marginTop="@dimen/spacing_xs"
-        app:layout_constraintStart_toEndOf="@id/img_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_name" />
+        <!-- Logo -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img_logo"
+            android:layout_width="@dimen/logo_size_sm"
+            android:layout_height="@dimen/logo_size_sm"
+            android:scaleType="centerCrop"
+            android:contentDescription="Logo"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize12"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/text_xs"
-        android:textColor="@color/brand_green"
-        android:layout_marginTop="@dimen/spacing_sm"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/img_logo" />
+        <!-- Name -->
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_md"
+            android:textColor="@color/text_primary"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/img_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_url"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/text_xs"
-        android:textColor="@color/navy_light"
-        android:layout_marginTop="@dimen/spacing_xs"
-        android:maxLines="1"
-        android:ellipsize="end"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_category" />
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/text_secondary"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toEndOf="@id/img_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
-    <TextView
-        android:id="@+id/tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/text_xs"
-        android:textColor="@color/text_hint"
-        android:layout_marginTop="@dimen/spacing_xs"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_url" />
+        <!-- Spacer Divider -->
+        <View
+            android:id="@+id/divider_submission"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/img_logo" />
 
-    <TextView
-        android:id="@+id/tv_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="@dimen/text_sm"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_url" />
+        <!-- Category Tag -->
+        <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_xs"
+            android:textColor="@color/brand_primary"
+            android:background="@drawable/bg_badge_verified"
+            android:backgroundTint="@color/brand_primary_light"
+            android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider_submission" />
 
-    <Button
-        android:id="@+id/btn_approve"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:text="@string/btn_approve"
-        android:textSize="@dimen/text_xs"
-        android:backgroundTint="@color/status_verified"
-        android:layout_marginTop="@dimen/spacing_sm"
-        app:layout_constraintEnd_toStartOf="@id/btn_reject"
-        app:layout_constraintTop_toBottomOf="@id/tv_date" />
+        <!-- URL -->
+        <TextView
+            android:id="@+id/tv_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_xs"
+            android:textColor="@color/brand_primary"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_category" />
 
-    <Button
-        android:id="@+id/btn_reject"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:text="@string/btn_reject"
-        android:textSize="@dimen/text_xs"
-        android:backgroundTint="@color/status_rejected"
-        android:layout_marginStart="@dimen/spacing_sm"
-        android:layout_marginTop="@dimen/spacing_sm"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_date" />
+        <!-- Date Added -->
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_xs"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_url" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Status Badge -->
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_xs"
+            android:visibility="gone"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_url" />
+
+        <!-- Bottom Action Row Divider -->
+        <View
+            android:id="@+id/divider_buttons"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginVertical="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_date" />
+
+        <!-- Action Buttons (Pending state only) -->
+        <Button
+            android:id="@+id/btn_approve"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="@string/btn_approve"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/status_verified"
+            android:textColor="@color/white"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginTop="12dp"
+            android:stateListAnimator="@null"
+            app:layout_constraintEnd_toStartOf="@id/btn_reject"
+            app:layout_constraintTop_toBottomOf="@id/divider_buttons" />
+
+        <Button
+            android:id="@+id/btn_reject"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="@string/btn_reject"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/status_rejected"
+            android:textColor="@color/white"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            android:stateListAnimator="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider_buttons" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

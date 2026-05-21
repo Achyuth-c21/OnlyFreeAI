@@ -1,39 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base Badge -->
+
+    <!-- Badge Styles -->
     <style name="Badge">
         <item name="android:textSize">@dimen/text_xs</item>
         <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Verified Badge -->
     <style name="Badge.Verified">
         <item name="android:background">@drawable/bg_badge_verified</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/text_xs</item>
-        <item name="android:paddingStart">10dp</item>
-        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0.04</item>
     </style>
 
-    <!-- Primary Button -->
+    <style name="Badge.Pending">
+        <item name="android:background">@drawable/bg_badge_pending</item>
+        <item name="android:textColor">@color/status_pending</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <!-- Button Styles -->
     <style name="Button.Primary" parent="Widget.Material3.Button">
         <item name="android:background">@drawable/bg_button_primary</item>
         <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_md</item>
         <item name="android:minHeight">@dimen/btn_height</item>
-        <item name="android:paddingStart">@dimen/btn_padding_horizontal</item>
-        <item name="android:paddingEnd">@dimen/btn_padding_horizontal</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:stateListAnimator">@null</item>
     </style>
 
-    <!-- Tool Card -->
+    <style name="Button.Secondary">
+        <item name="android:background">@drawable/bg_button_secondary</item>
+        <item name="android:textColor">@color/brand_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_md</item>
+        <item name="android:minHeight">@dimen/btn_height</item>
+    </style>
+
+    <style name="Button.Ghost">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_sm</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <!-- Card Styles -->
     <style name="ToolCard">
         <item name="android:background">@drawable/bg_card</item>
         <item name="android:padding">@dimen/card_padding</item>
-        <item name="android:layout_marginStart">@dimen/spacing_md</item>
-        <item name="android:layout_marginEnd">@dimen/spacing_md</item>
-        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+        <item name="android:layout_marginHorizontal">@dimen/spacing_md</item>
+        <item name="android:layout_marginBottom">@dimen/card_margin</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
     <!-- Section Header -->
@@ -41,6 +69,48 @@
         <item name="android:textSize">@dimen/text_lg</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingBottom">@dimen/spacing_sm</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
+
+    <!-- Input Field -->
+    <style name="InputField">
+        <item name="android:background">@drawable/bg_input_field</item>
+        <item name="android:padding">@dimen/spacing_md</item>
+        <item name="android:textSize">@dimen/text_md</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+    </style>
+
+    <!-- Category Chip -->
+    <style name="ChipStyle">
+        <item name="android:background">@drawable/selector_category_chip</item>
+        <item name="android:textSize">@dimen/text_sm</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Screen Title -->
+    <style name="ScreenTitle">
+        <item name="android:textSize">@dimen/text_xxl</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <!-- Screen Subtitle -->
+    <style name="ScreenSubtitle">
+        <item name="android:textSize">@dimen/text_sm</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:lineSpacingMultiplier">1.4</item>
+    </style>
+
+    <!-- Shape appearance overlays -->
+    <style name="ShapeAppearanceOverlay.App.CornerSize12" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+
 </resources>

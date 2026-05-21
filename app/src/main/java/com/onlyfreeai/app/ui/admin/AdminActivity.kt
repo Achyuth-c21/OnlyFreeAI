@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.onlyfreeai.app.databinding.ActivityAdminBinding
-import com.onlyfreeai.app.util.hide
-import com.onlyfreeai.app.util.show
-import com.onlyfreeai.app.util.toast
+import com.onlyfreeai.app.util.*
 
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -33,6 +31,10 @@ class AdminActivity : AppCompatActivity() {
         observeData()
 
         verifyAdminAccess()
+
+        // Staggered entrance for admin dashboard sections
+        binding.tabLayout.animateEntrance(0)
+        binding.recyclerSubmissions.animateEntrance(80)
     }
 
     private fun verifyAdminAccess() {

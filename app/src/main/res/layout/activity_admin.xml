@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/navy_dark"
-            app:navigationIcon="@drawable/ic_home"
+            app:navigationIcon="@drawable/ic_back_arrow"
             app:title="@string/admin_title"
             app:titleTextColor="@color/white" />
 
@@ -26,7 +26,9 @@
             android:background="@color/navy_mid"
             app:tabTextColor="@color/text_hint"
             app:tabSelectedTextColor="@color/white"
-            app:tabIndicatorColor="@color/brand_green">
+            app:tabIndicatorColor="@color/brand_accent"
+            app:tabIndicatorHeight="3dp"
+            app:tabRippleColor="@color/ripple">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -47,17 +49,38 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="@dimen/spacing_sm" />
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
+            android:paddingTop="12dp" />
 
-        <TextView
+        <!-- Admin Empty State (Premium styled layout replacing plain TextView) -->
+        <LinearLayout
             android:id="@+id/empty_state"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/empty_submissions"
-            android:textColor="@color/text_hint"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_sparkle"
+                android:alpha="0.4"
+                app:tint="@color/text_tertiary"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_submissions"
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold"
+                android:gravity="center" />
+        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar
@@ -66,5 +89,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:indeterminateTint="@color/brand_green" />
+        android:indeterminateTint="@color/brand_primary" />
 </FrameLayout>

@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base App Theme (Light) -->
+
     <style name="Theme.OnlyFreeAI" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary brand color -->
         <item name="colorPrimary">@color/brand_primary</item>
         <item name="colorPrimaryDark">@color/brand_primary_dark</item>
-        <item name="colorAccent">@color/brand_primary</item>
+        <item name="colorAccent">@color/brand_accent</item>
         <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Surface colors -->
         <item name="android:colorBackground">@color/background_primary</item>
+        <item name="colorSurface">@color/surface_elevated</item>
+
+        <!-- Status bar -->
         <item name="android:statusBarColor">@color/background_primary</item>
-        <item name="android:navigationBarColor">@color/background_primary</item>
-        <!-- Light status bar text -->
+        <item name="android:navigationBarColor">@color/bottom_nav_bg</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Window transitions -->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
+
+        <!-- Ripple -->
+        <item name="android:colorControlHighlight">@color/ripple</item>
     </style>
 
-    <!-- Splash / Login Theme -->
     <style name="Theme.OnlyFreeAI.Splash" parent="Theme.OnlyFreeAI">
         <item name="android:statusBarColor">@color/background_primary</item>
-        <item name="android:colorBackground">@color/background_primary</item>
-        <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <!-- Dark Theme (kept similar but updated base colors) -->
     <style name="Theme.OnlyFreeAI.Dark" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/brand_primary</item>
         <item name="colorPrimaryDark">@color/brand_primary_dark</item>
-        <item name="colorAccent">@color/brand_primary</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/brand_accent</item>
         <item name="android:statusBarColor">@color/navy_dark</item>
         <item name="android:navigationBarColor">@color/navy_dark</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
 </resources>

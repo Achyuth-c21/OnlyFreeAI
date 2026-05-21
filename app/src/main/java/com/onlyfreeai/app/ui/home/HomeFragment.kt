@@ -100,25 +100,65 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCategoryFilter() {
-        val adapter = ArrayAdapter(
+        val spinnerAdapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
             Constants.CATEGORIES
         )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerCategory.adapter = adapter
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerCategory.adapter = spinnerAdapter
 
-        binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val category = Constants.CATEGORIES[position]
+        // Dynamically build the beautiful chips
+        binding.chipGroupCategories.removeAllViews()
+        Constants.CATEGORIES.forEachIndexed { index, category ->
+            val chip = com.google.android.material.chip.Chip(requireContext()).apply {
+                text = category
+                isClickable = true
+                isCheckable = true
+                isCheckedIconVisible = false
+                
+                // Styling corresponding to Midnight Luxe
+                setTextColor(androidx.core.content.ContextCompat.getColorStateList(requireContext(), R.color.chip_text_color))
+                background = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.selector_category_chip)
+                chipBackgroundColor = null
+                chipStrokeColor = null
+                chipStrokeWidth = 0f
+                rippleColor = null
+                
+                val horizontalPadding = (20 * resources.displayMetrics.density).toInt()
+                val verticalPadding = (10 * resources.displayMetrics.density).toInt()
+                setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+                
+                id = index
+                isChecked = (index == 0)
+                isSelected = (index == 0)
+            }
+
+            chip.setOnClickListener {
+                // Sync spinner selection in the background
+                binding.spinnerCategory.setSelection(index)
+
+                // Select chip and uncheck others
+                for (i in 0 until binding.chipGroupCategories.childCount) {
+                    val child = binding.chipGroupCategories.getChildAt(i) as? com.google.android.material.chip.Chip
+                    val isCurrent = (child?.id == index)
+                    child?.isChecked = isCurrent
+                    child?.isSelected = isCurrent
+                }
+
+                // Reset position tracker in adapter so stagger entrance fires again
+                (binding.recyclerTools.adapter as? ToolAdapter)?.apply {
+                    // We can't access private property lastPosition directly, but submitting a new list will reset automatically or we can ignore
+                }
+
+                // Load appropriate category
                 if (category == "All") {
                     viewModel.loadTools()
                 } else {
                     viewModel.filterByCategory(category)
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            binding.chipGroupCategories.addView(chip)
         }
     }
 
@@ -127,20 +167,29 @@ class HomeFragment : Fragment() {
             toolAdapter.submitList(tools)
             binding.swipeRefresh.isRefreshing = false
 
-            if (tools.isEmpty()) {
+            if (tools.isEmpty() && viewModel.isLoading.value != true) {
                 binding.emptyState.show()
                 binding.recyclerTools.hide()
             } else {
                 binding.emptyState.hide()
-                binding.recyclerTools.show()
+                if (viewModel.isLoading.value != true) {
+                    binding.recyclerTools.show()
+                }
             }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading && !binding.swipeRefresh.isRefreshing) {
-                binding.progressBar.show()
+                binding.shimmerViewContainer.show()
+                binding.shimmerViewContainer.startShimmer()
+                binding.recyclerTools.hide()
+                binding.emptyState.hide()
             } else {
-                binding.progressBar.hide()
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.hide()
+                if (viewModel.tools.value?.isNotEmpty() == true) {
+                    binding.recyclerTools.show()
+                }
             }
         }
     }

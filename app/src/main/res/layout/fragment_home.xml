@@ -16,7 +16,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@android:color/transparent"
-            android:padding="24dp"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="16dp"
             android:gravity="center_vertical">
 
             <LinearLayout
@@ -29,106 +31,160 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
-                    android:textSize="24sp"
+                    android:textSize="28sp"
                     android:textColor="@color/text_primary"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:letterSpacing="-0.02" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Only Free. Only AI."
                     android:textSize="14sp"
-                    android:textColor="@color/text_hint"
-                    android:layout_marginTop="4dp" />
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp"
+                    android:letterSpacing="0.01" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/btn_admin"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:src="@drawable/ic_admin"
                 android:contentDescription="Admin Panel"
                 android:visibility="gone"
-                android:padding="12dp"
+                android:padding="11dp"
                 android:background="@drawable/bg_settings_icon"
                 app:tint="@color/text_primary" />
         </LinearLayout>
 
-        <!-- Search Bar -->
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/search_view"
+        <!-- Search Bar Container (Glassmorphic look) -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_search_bar"
-            app:queryHint="@string/search_hint"
-            app:iconifiedByDefault="false"
-            app:searchIcon="@drawable/ic_search" />
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="16dp">
 
-        <!-- Category Filter -->
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_search_bar"
+                app:queryHint="@string/search_hint"
+                app:iconifiedByDefault="false"
+                app:searchIcon="@drawable/ic_search"
+                app:queryBackground="@android:color/transparent" />
+        </FrameLayout>
+
+        <!-- Hidden legacy spinner to satisfy compilation & automatic bindings -->
         <Spinner
             android:id="@+id/spinner_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:visibility="invisible" />
 
-        <!-- Tool List -->
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh"
+        <!-- Category Horizontal Filter Chips (Premium UI replacement for Spinner) -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:selectionRequired="true" />
+        </HorizontalScrollView>
+
+        <!-- Container for list & shimmer -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_tools"
+            <!-- Tool List -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingBottom="24dp" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <!-- Facebook Shimmer Skeleton loading indicators -->
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_view_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="24dp" />
+                android:visibility="gone"
+                app:shimmer_auto_start="true"
+                app:shimmer_base_color="@color/shimmer_base"
+                app:shimmer_highlight_color="@color/shimmer_highlight">
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        <!-- Empty State -->
-        <LinearLayout
-            android:id="@+id/empty_state"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
+                    <include layout="@layout/item_tool_shimmer" />
+                    <include layout="@layout/item_tool_shimmer" />
+                    <include layout="@layout/item_tool_shimmer" />
+                    <include layout="@layout/item_tool_shimmer" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
-            <!-- Adding a placeholder box icon for illustration -->
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@android:drawable/ic_dialog_info"
-                app:tint="@color/brand_primary_light"
-                android:layout_marginBottom="24dp"/>
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/empty_tools"
-                android:textSize="20sp"
-                android:textColor="@color/text_primary"
-                android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/text_tertiary"
+                    android:layout_marginBottom="24dp"
+                    android:alpha="0.6" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/empty_tools_subtitle"
-                android:textSize="14sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/empty_tools"
+                    android:textSize="20sp"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/empty_tools_subtitle"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 
+    <!-- Legacy progress bar kept hidden just in case of any dynamic runtime bindings -->
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"

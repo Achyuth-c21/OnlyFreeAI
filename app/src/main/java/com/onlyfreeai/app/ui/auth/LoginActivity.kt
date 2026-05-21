@@ -22,6 +22,8 @@ import com.onlyfreeai.app.databinding.ActivityLoginBinding
 import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
 import com.onlyfreeai.app.util.toast
+import com.onlyfreeai.app.util.scalePress
+import com.onlyfreeai.app.util.animateEntrance
 
 @Suppress("DEPRECATION")
 class LoginActivity : AppCompatActivity() {
@@ -102,6 +104,30 @@ class LoginActivity : AppCompatActivity() {
         setupGoogleSignIn()
         setupClickListeners()
         updateUI()
+
+        // Apply premium touch animations
+        binding.btnAction.scalePress()
+        binding.btnGoogleSignIn.scalePress()
+        binding.tvSwitchAction.scalePress()
+        binding.tvForgotPassword.scalePress()
+
+        animateEntrance()
+    }
+
+    private fun animateEntrance() {
+        val views = listOf(
+            binding.logoSection,
+            binding.tvTitle,
+            binding.tvSubtitle,
+            binding.etEmail,
+            binding.etPassword,
+            binding.tvForgotPassword,
+            binding.btnAction,
+            binding.btnGoogleSignIn
+        )
+        views.forEachIndexed { index, view ->
+            view.animateEntrance(index * 60L)
+        }
     }
 
     private fun setupGoogleSignIn() {

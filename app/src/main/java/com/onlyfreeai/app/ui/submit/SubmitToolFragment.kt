@@ -8,10 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.onlyfreeai.app.databinding.FragmentSubmitToolBinding
-import com.onlyfreeai.app.util.Constants
-import com.onlyfreeai.app.util.hide
-import com.onlyfreeai.app.util.show
-import com.onlyfreeai.app.util.toast
+import com.onlyfreeai.app.util.*
 
 class SubmitToolFragment : Fragment() {
 
@@ -31,6 +28,24 @@ class SubmitToolFragment : Fragment() {
         setupCategorySpinner()
         setupClickListeners()
         observeData()
+
+        // Apply premium tactile feedback
+        binding.btnFetchUrl.scalePress()
+        binding.btnSubmit.scalePress()
+
+        // Staggered entrance animation for form elements
+        val viewsToAnimate = listOf(
+            binding.etUrl,
+            binding.btnFetchUrl,
+            binding.etName,
+            binding.etDescription,
+            binding.spinnerCategory,
+            binding.etWhatsFree,
+            binding.btnSubmit
+        )
+        viewsToAnimate.forEachIndexed { index, v ->
+            v.animateEntrance(index * 50L)
+        }
     }
 
     private fun setupCategorySpinner() {

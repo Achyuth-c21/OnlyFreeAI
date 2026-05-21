@@ -13,11 +13,15 @@ import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.loadUrl
 import com.onlyfreeai.app.util.show
 import com.onlyfreeai.app.util.toFormattedDate
+import com.onlyfreeai.app.util.scalePress
+import com.onlyfreeai.app.util.animateEntrance
 
 class SubmissionAdapter(
     private val onApprove: (Submission) -> Unit,
     private val onReject: (Submission) -> Unit
 ) : ListAdapter<Submission, SubmissionAdapter.SubmissionViewHolder>(SubmissionDiffCallback()) {
+
+    private var lastPosition = -1
 
     inner class SubmissionViewHolder(
         private val binding: ItemSubmissionBinding
@@ -50,6 +54,10 @@ class SubmissionAdapter(
                     }
                 }
 
+                root.scalePress()
+                btnApprove.scalePress()
+                btnReject.scalePress()
+
                 btnApprove.setOnClickListener { onApprove(submission) }
                 btnReject.setOnClickListener { onReject(submission) }
 
@@ -70,6 +78,12 @@ class SubmissionAdapter(
 
     override fun onBindViewHolder(holder: SubmissionViewHolder, position: Int) {
         holder.bind(getItem(position))
+        
+        // Staggered entrance animation
+        if (position > lastPosition) {
+            holder.itemView.animateEntrance((position * 40L).coerceAtMost(300L))
+            lastPosition = position
+        }
     }
 
     class SubmissionDiffCallback : DiffUtil.ItemCallback<Submission>() {

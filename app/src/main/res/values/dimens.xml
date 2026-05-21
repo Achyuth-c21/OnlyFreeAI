@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Spacing -->
+    <dimen name="spacing_xxs">2dp</dimen>
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
     <dimen name="spacing_md">16dp</dimen>
@@ -16,19 +17,24 @@
     <dimen name="radius_pill">50dp</dimen>
 
     <!-- Card -->
-    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_elevation">8dp</dimen>
     <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin">12dp</dimen>
+    <dimen name="card_radius">16dp</dimen>
 
-    <!-- Tool Logo -->
+    <!-- Logo sizes -->
     <dimen name="logo_size_sm">40dp</dimen>
     <dimen name="logo_size_md">56dp</dimen>
     <dimen name="logo_size_lg">80dp</dimen>
+    <dimen name="logo_size_xl">100dp</dimen>
 
     <!-- Button -->
-    <dimen name="btn_height">48dp</dimen>
+    <dimen name="btn_height">52dp</dimen>
     <dimen name="btn_padding_horizontal">24dp</dimen>
+    <dimen name="btn_radius">14dp</dimen>
+    <dimen name="btn_elevation">4dp</dimen>
 
-    <!-- Text Sizes -->
+    <!-- Text -->
     <dimen name="text_xs">12sp</dimen>
     <dimen name="text_sm">14sp</dimen>
     <dimen name="text_md">16sp</dimen>
@@ -37,6 +43,13 @@
     <dimen name="text_xxl">32sp</dimen>
     <dimen name="text_hero">40sp</dimen>
 
-    <!-- Bottom Nav -->
-    <dimen name="bottom_nav_height">64dp</dimen>
+    <!-- Bottom nav -->
+    <dimen name="bottom_nav_height">68dp</dimen>
+    <dimen name="bottom_nav_elevation">12dp</dimen>
+
+    <!-- Animation -->
+    <integer name="anim_duration_fast">200</integer>
+    <integer name="anim_duration_medium">350</integer>
+    <integer name="anim_duration_slow">500</integer>
+    <integer name="anim_stagger_delay">60</integer>
 </resources>

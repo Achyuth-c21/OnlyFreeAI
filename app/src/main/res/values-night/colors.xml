@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Surface Colors (Dark) -->
-    <color name="background_primary">#121212</color>
-    <color name="background_card">#1E1E1E</color>
-    <color name="background_search">#2A2A2A</color>
-    <color name="surface_elevated">#252525</color>
+    <!-- Dark mode overrides -->
+    <color name="background_primary">#0B0F1A</color>
+    <color name="background_secondary">#111827</color>
+    <color name="background_card">#151B2B</color>
+    <color name="background_search">#1E2538</color>
+    <color name="surface_elevated">#1E2538</color>
+    <color name="surface_secondary">#1E2538</color>
 
-    <!-- Text Colors (Dark) -->
-    <color name="text_primary">#EAEAEA</color>
-    <color name="text_secondary">#AAAAAA</color>
-    <color name="text_hint">#777777</color>
+    <color name="text_primary">#F1F5F9</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_tertiary">#64748B</color>
+    <color name="text_hint">#64748B</color>
 
-    <!-- Misc -->
-    <color name="divider">#333333</color>
+    <color name="input_border">#334155</color>
+    <color name="divider">#1E293B</color>
+
     <color name="ripple">#1AFFFFFF</color>
     <color name="shadow">#40000000</color>
+    <color name="card_shadow">#00000000</color>
+
+    <color name="shimmer_base">#1E293B</color>
+    <color name="shimmer_highlight">#334155</color>
+
+    <color name="bottom_nav_bg">#0F1729</color>
+
+    <color name="google_btn_text">#F1F5F9</color>
+    <color name="google_btn_border">#334155</color>
 </resources>

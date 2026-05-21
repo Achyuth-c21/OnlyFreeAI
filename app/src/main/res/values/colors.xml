@@ -1,54 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Brand (Blue) -->
-    <color name="brand_primary">#2563FF</color>
-    <color name="brand_primary_dark">#1D4ED8</color>
-    <color name="brand_primary_light">#EAF1FF</color>
-    <color name="brand_secondary">#5B8CFF</color>
+    <!-- Brand Primary — Indigo -->
+    <color name="brand_primary">#6366F1</color>
+    <color name="brand_primary_dark">#4F46E5</color>
+    <color name="brand_primary_light">#EEF2FF</color>
+    <color name="brand_secondary">#8B5CF6</color>
 
-    <!-- Legacy aliases to avoid breaking existing hardcoded references temporarily -->
-    <color name="brand_pink">#2563FF</color>
-    <color name="brand_pink_dark">#1D4ED8</color>
-    <color name="brand_pink_light">#EAF1FF</color>
-    <color name="brand_green">#2563FF</color>
-    <color name="brand_green_dark">#1D4ED8</color>
-    <color name="brand_green_light">#EAF1FF</color>
+    <!-- Brand Accent — Emerald -->
+    <color name="brand_accent">#10B981</color>
+    <color name="brand_accent_light">#D1FAE5</color>
+    <color name="brand_accent_dark">#059669</color>
 
-    <!-- Dark Navy Palette (kept for dark mode) -->
-    <color name="navy_dark">#1A1A2E</color>
-    <color name="navy_mid">#16213E</color>
-    <color name="navy_light">#0F3460</color>
+    <!-- Legacy aliases (mapped to new colors for backward compat) -->
+    <color name="brand_pink">#6366F1</color>
+    <color name="brand_green">#10B981</color>
+    <color name="brand_green_light">#D1FAE5</color>
 
-    <!-- Surface Colors (Light) -->
-    <color name="background_primary">#F8FAFF</color>
+    <!-- Navy palette (for headers, toolbars) -->
+    <color name="navy_dark">#1E1B4B</color>
+    <color name="navy_mid">#312E81</color>
+    <color name="navy_light">#3730A3</color>
+
+    <!-- Backgrounds -->
+    <color name="background_primary">#FAFAFE</color>
+    <color name="background_secondary">#F1F5F9</color>
     <color name="background_card">#FFFFFF</color>
-    <color name="background_search">#FFFFFF</color>
+    <color name="background_search">#F1F5F9</color>
     <color name="surface_elevated">#FFFFFF</color>
-    <color name="surface_secondary">#F5F7FC</color>
+    <color name="surface_secondary">#F1F5F9</color>
 
-    <!-- Text Colors (Light) -->
+    <!-- Text -->
     <color name="text_primary">#0F172A</color>
-    <color name="text_secondary">#64748B</color>
-    <color name="text_hint">#94A3B8</color>
+    <color name="text_secondary">#475569</color>
     <color name="text_tertiary">#94A3B8</color>
+    <color name="text_hint">#94A3B8</color>
     <color name="text_on_primary">#FFFFFF</color>
 
-    <!-- Status Colors -->
-    <color name="status_verified">#22C55E</color>
+    <!-- Status -->
+    <color name="status_verified">#10B981</color>
     <color name="status_pending">#F59E0B</color>
     <color name="status_rejected">#EF4444</color>
+    <color name="status_flagged">#F97316</color>
 
-    <!-- Input and Borders -->
-    <color name="input_border">#E5EAF3</color>
-    <color name="input_border_focused">#2563FF</color>
-    <color name="border">#E5EAF3</color>
-    <color name="divider">#EEF2F7</color>
+    <!-- Borders & Dividers -->
+    <color name="input_border">#CBD5E1</color>
+    <color name="input_border_focused">#6366F1</color>
+    <color name="divider">#E2E8F0</color>
 
-    <!-- Misc -->
-    <color name="ripple">#1A2563FF</color>
-    <color name="shadow">#140F172A</color>
+    <!-- Effects -->
+    <color name="ripple">#1A6366F1</color>
+    <color name="shadow">#1A6366F1</color>
+    <color name="card_shadow">#146366F1</color>
+
+    <!-- Gradient pairs -->
+    <color name="gradient_start">#6366F1</color>
+    <color name="gradient_end">#8B5CF6</color>
+    <color name="gradient_accent_start">#10B981</color>
+    <color name="gradient_accent_end">#06B6D4</color>
+
+    <!-- Shimmer -->
+    <color name="shimmer_base">#E2E8F0</color>
+    <color name="shimmer_highlight">#F8FAFC</color>
+
+    <!-- Bottom nav -->
+    <color name="bottom_nav_bg">#FFFFFF</color>
+
+    <!-- Google button -->
+    <color name="google_btn_text">#1F2937</color>
+    <color name="google_btn_border">#D1D5DB</color>
+
+    <!-- Standard -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="google_btn_border">#E5EAF3</color>
-    <color name="google_btn_text">#0F172A</color>
+    <color name="transparent">#00000000</color>
 </resources>

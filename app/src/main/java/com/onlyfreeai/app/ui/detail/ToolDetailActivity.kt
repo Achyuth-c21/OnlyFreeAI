@@ -12,6 +12,7 @@ class ToolDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityToolDetailBinding
     private lateinit var viewModel: ToolDetailViewModel
+    private var hasAnimated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +62,11 @@ class ToolDetailActivity : AppCompatActivity() {
                 // Save count
                 tvSaves.text = "${tool.saves} saves"
 
+                // Apply premium tactile feedback
+                btnVisitTool.scalePress()
+                btnSaveTool.scalePress()
+                btnGonePaid.scalePress()
+
                 // Visit Tool button
                 btnVisitTool.setOnClickListener {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(tool.websiteUrl))
@@ -75,6 +81,27 @@ class ToolDetailActivity : AppCompatActivity() {
                 // Flag as Gone Paid
                 btnGonePaid.setOnClickListener {
                     viewModel.flagAsPaid(tool.id)
+                }
+
+                // Sequential stagger entrance animation
+                if (!hasAnimated) {
+                    hasAnimated = true
+                    val viewsToAnimate = listOf(
+                        imgToolLogo,
+                        tvToolName,
+                        badgeVerified,
+                        tvCategory,
+                        cardDescription,
+                        cardWhatsFree,
+                        cardWhatsNotFree,
+                        cardBestFor,
+                        btnVisitTool,
+                        btnSaveTool,
+                        btnGonePaid
+                    )
+                    viewsToAnimate.forEachIndexed { index, view ->
+                        view.animateEntrance(index * 50L)
+                    }
                 }
             }
         }

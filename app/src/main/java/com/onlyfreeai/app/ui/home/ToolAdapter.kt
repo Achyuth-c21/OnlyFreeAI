@@ -10,10 +10,14 @@ import com.onlyfreeai.app.databinding.ItemToolCardBinding
 import com.onlyfreeai.app.util.loadUrl
 import com.onlyfreeai.app.util.show
 import com.onlyfreeai.app.util.hide
+import com.onlyfreeai.app.util.scalePress
+import com.onlyfreeai.app.util.animateEntrance
 
 class ToolAdapter(
     private val onToolClick: (Tool) -> Unit
 ) : ListAdapter<Tool, ToolAdapter.ToolViewHolder>(ToolDiffCallback()) {
+
+    private var lastPosition = -1
 
     inner class ToolViewHolder(
         private val binding: ItemToolCardBinding
@@ -34,6 +38,7 @@ class ToolAdapter(
 
                 tvSaves.text = "${tool.saves} saves"
 
+                root.scalePress()
                 root.setOnClickListener { onToolClick(tool) }
             }
         }
@@ -48,6 +53,12 @@ class ToolAdapter(
 
     override fun onBindViewHolder(holder: ToolViewHolder, position: Int) {
         holder.bind(getItem(position))
+        
+        // Staggered entrance animation for new items
+        if (position > lastPosition) {
+            holder.itemView.animateEntrance((position * 40L).coerceAtMost(300L))
+            lastPosition = position
+        }
     }
 
     class ToolDiffCallback : DiffUtil.ItemCallback<Tool>() {

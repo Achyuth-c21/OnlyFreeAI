@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary">
@@ -11,13 +12,17 @@
 
         <!-- Header -->
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/my_stack_title"
-            android:textSize="@dimen/text_xl"
+            android:textSize="28sp"
             android:textColor="@color/text_primary"
             android:textStyle="bold"
-            android:padding="@dimen/spacing_lg" />
+            android:letterSpacing="-0.02"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="16dp" />
 
         <!-- Saved Tools List -->
         <androidx.recyclerview.widget.RecyclerView
@@ -26,7 +31,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingBottom="@dimen/spacing_md" />
+            android:paddingBottom="24dp" />
 
         <!-- Empty State -->
         <LinearLayout
@@ -36,31 +41,33 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
+            android:padding="32dp"
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:src="@drawable/ic_stack"
-                android:alpha="0.4"
-                android:contentDescription="Empty stack" />
+                android:alpha="0.5"
+                app:tint="@color/text_tertiary"
+                android:layout_marginBottom="24dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_stack"
-                android:textSize="@dimen/text_lg"
+                android:textSize="20sp"
                 android:textColor="@color/text_primary"
-                android:textStyle="bold"
-                android:layout_marginTop="@dimen/spacing_md" />
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_stack_subtitle"
-                android:textSize="@dimen/text_sm"
+                android:textSize="14sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginTop="@dimen/spacing_sm" />
+                android:gravity="center"
+                android:layout_marginTop="8dp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -70,5 +77,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:indeterminateTint="@color/brand_green" />
+        android:indeterminateTint="@color/brand_primary" />
 </FrameLayout>

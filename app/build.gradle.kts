@@ -122,6 +122,9 @@ dependencies {
     // Lottie Animations
     implementation("com.airbnb.android:lottie:6.4.0")
 
+    // Shimmer loading effect (Facebook)
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

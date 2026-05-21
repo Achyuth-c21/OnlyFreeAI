@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.FragmentSettingsBinding
 import com.onlyfreeai.app.ui.auth.LoginActivity
+import com.onlyfreeai.app.util.*
 
 @Suppress("DEPRECATION")
 class SettingsFragment : Fragment() {
@@ -49,6 +50,35 @@ class SettingsFragment : Fragment() {
         setupLanguage()
         setupVersion()
         setupLogout()
+
+        // Apply premium tactile feedback
+        binding.settingTheme.scalePress()
+        binding.settingLanguage.scalePress()
+        binding.btnLogout.scalePress()
+
+        // Gentle scale-up entrance animation for the avatar photo
+        binding.ivAvatar.animate()
+            .scaleX(1.05f)
+            .scaleY(1.05f)
+            .setDuration(450)
+            .withEndAction {
+                binding.ivAvatar.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(350)
+                    .start()
+            }
+            .start()
+
+        // Staggered entrance animation for Settings sections
+        val viewsToAnimate = listOf(
+            binding.cardProfile,
+            binding.cardSettingsList,
+            binding.btnLogout
+        )
+        viewsToAnimate.forEachIndexed { index, v ->
+            v.animateEntrance(index * 60L)
+        }
     }
 
     private fun setupProfile() {

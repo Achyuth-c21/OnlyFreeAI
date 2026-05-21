@@ -14,6 +14,7 @@ import com.onlyfreeai.app.ui.home.ToolAdapter
 import com.onlyfreeai.app.util.Constants
 import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
+import com.onlyfreeai.app.util.animateEntrance
 
 class MyStackFragment : Fragment() {
 
@@ -33,6 +34,8 @@ class MyStackFragment : Fragment() {
 
         setupRecyclerView()
         observeData()
+
+        binding.tvTitle.animateEntrance()
     }
 
     override fun onResume() {

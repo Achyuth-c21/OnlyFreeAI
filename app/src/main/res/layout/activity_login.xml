@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/background_primary">
 
     <LinearLayout
+        android:id="@+id/login_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingHorizontal="28dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="32dp">
 
-        <!-- Logo -->
-        <TextView
+        <!-- App Logo -->
+        <LinearLayout
+            android:id="@+id/logo_section"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="OnlyFreeAI"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="40dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="48dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_sparkle"
+                android:contentDescription="Logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:letterSpacing="-0.02"
+                android:layout_marginStart="10dp" />
+        </LinearLayout>
 
         <!-- Title -->
         <TextView
@@ -31,6 +50,7 @@
             android:textSize="32sp"
             android:textColor="@color/text_primary"
             android:textStyle="bold"
+            android:letterSpacing="-0.02"
             android:layout_marginBottom="8dp" />
 
         <!-- Subtitle -->
@@ -38,10 +58,11 @@
             android:id="@+id/tv_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign in to get started with OnlyFreeAI"
+            android:text="Sign in to discover free AI tools"
             android:textColor="@color/text_secondary"
             android:textSize="16sp"
-            android:layout_marginBottom="32dp" />
+            android:lineSpacingMultiplier="1.4"
+            android:layout_marginBottom="40dp" />
 
         <!-- Email Field -->
         <TextView
@@ -56,15 +77,16 @@
         <EditText
             android:id="@+id/et_email"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
             android:background="@drawable/bg_input_field"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:textSize="16sp"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/text_hint"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="20dp" />
 
         <!-- Password Field -->
         <TextView
@@ -79,15 +101,16 @@
         <EditText
             android:id="@+id/et_password"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:background="@drawable/bg_input_field"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:textSize="16sp"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/text_hint"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="20dp" />
 
         <!-- Confirm Password (Sign Up only) -->
         <LinearLayout
@@ -95,7 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             android:visibility="gone">
 
             <TextView
@@ -110,26 +133,28 @@
             <EditText
                 android:id="@+id/et_confirm_password"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:hint="@string/hint_password"
                 android:inputType="textPassword"
                 android:background="@drawable/bg_input_field"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:textSize="16sp"
+                android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_hint" />
         </LinearLayout>
 
-        <!-- Forgot Password (Sign In only) -->
+        <!-- Forgot Password -->
         <TextView
             android:id="@+id/tv_forgot_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/forgot_password"
             android:textSize="14sp"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/brand_primary"
+            android:textStyle="bold"
             android:layout_gravity="end"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="28dp"
             android:clickable="true"
             android:focusable="true" />
 
@@ -137,13 +162,15 @@
         <Button
             android:id="@+id/btn_action"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:text="@string/sign_in_title"
             android:textSize="16sp"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:letterSpacing="0.02"
             android:background="@drawable/bg_button_primary"
-            android:layout_marginBottom="24dp" />
+            android:stateListAnimator="@null"
+            android:layout_marginBottom="20dp" />
 
         <!-- Toggle Sign In / Sign Up -->
         <LinearLayout
@@ -191,9 +218,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/or_divider"
                 android:textColor="@color/text_hint"
-                android:textSize="12sp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp" />
 
             <View
                 android:layout_width="0dp"
@@ -206,18 +234,20 @@
         <Button
             android:id="@+id/btn_google_sign_in"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:text="@string/continue_with_google"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textColor="@color/google_btn_text"
             android:textStyle="bold"
             android:textAllCaps="false"
+            android:letterSpacing="0.01"
             android:background="@drawable/bg_button_google"
             android:drawableStart="@drawable/ic_google"
             android:drawablePadding="12dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            android:gravity="center" />
+            android:gravity="center"
+            android:stateListAnimator="@null" />
 
         <!-- Progress -->
         <ProgressBar
@@ -230,5 +260,4 @@
             android:indeterminateTint="@color/brand_primary" />
 
     </LinearLayout>
-
 </ScrollView>

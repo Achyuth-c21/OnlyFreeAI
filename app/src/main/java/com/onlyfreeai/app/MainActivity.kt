@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.onlyfreeai.app.databinding.ActivityMainBinding
 import com.onlyfreeai.app.ui.admin.AdminActivity
 import com.onlyfreeai.app.ui.auth.LoginActivity
+import com.onlyfreeai.app.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,17 +40,25 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNavigation.setupWithNavController(navController)
 
-        // Hide bottom nav on certain destinations
+        // Smoothly hide/show bottom navigation with transitions
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
+            val shouldShow = when (destination.id) {
                 R.id.homeFragment,
                 R.id.submitToolFragment,
                 R.id.settingsFragment,
-                R.id.myStackFragment -> {
-                    binding.bottomNavigation.visibility = View.VISIBLE
+                R.id.myStackFragment -> true
+                else -> false
+            }
+
+            if (shouldShow) {
+                if (binding.bottomNavigation.visibility != View.VISIBLE) {
+                    binding.bottomNavigation.slideUp(250)
+                    binding.bottomNavShadow.fadeIn(250)
                 }
-                else -> {
-                    binding.bottomNavigation.visibility = View.GONE
+            } else {
+                if (binding.bottomNavigation.visibility == View.VISIBLE) {
+                    binding.bottomNavigation.slideDown(200)
+                    binding.bottomNavShadow.fadeOut(200)
                 }
             }
         }
