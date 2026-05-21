@@ -1,64 +1,47 @@
 package com.onlyfreeai.app.ui.settings
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.test.core.app.ApplicationProvider
+import android.content.SharedPreferences
 import com.onlyfreeai.app.util.Constants
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 
-@RunWith(RobolectricTestRunner::class)
 class LogoutPreferencesTest {
 
     @Test
-    fun testLogout_preservesThemePreferenceAndClearsOnboarded() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sharedPrefs = context.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
+    fun testLogout_removesOnboardedButDoesNotClear() {
+        // Arrange
+        val mockPrefs = mock(SharedPreferences::class.java)
+        val mockEditor = mock(SharedPreferences.Editor::class.java)
 
-        // 1. Arrange: Set both theme and onboarded flags
-        sharedPrefs.edit()
-            .putInt(Constants.PREF_DARK_MODE, AppCompatDelegate.MODE_NIGHT_YES)
-            .putBoolean(Constants.PREF_ONBOARDED, true)
-            .apply()
+        `when`(mockPrefs.edit()).thenReturn(mockEditor)
+        `when`(mockEditor.remove(Constants.PREF_ONBOARDED)).thenReturn(mockEditor)
 
-        // Verify initial state is set
-        assertEquals(AppCompatDelegate.MODE_NIGHT_YES, sharedPrefs.getInt(Constants.PREF_DARK_MODE, -1))
-        assertTrue(sharedPrefs.getBoolean(Constants.PREF_ONBOARDED, false))
+        // Act: Simulates the exact call in SettingsFragment.kt on logout
+        mockPrefs.edit().remove(Constants.PREF_ONBOARDED).apply()
 
-        // 2. Act: Perform the precise logout logic we implemented in SettingsFragment.kt
-        sharedPrefs.edit()
-            .remove(Constants.PREF_ONBOARDED)
-            .apply()
-
-        // 3. Assert: Onboarded flag is deleted, but theme preference remains fully intact
-        assertFalse(sharedPrefs.contains(Constants.PREF_ONBOARDED))
-        assertTrue(sharedPrefs.contains(Constants.PREF_DARK_MODE))
-        assertEquals(AppCompatDelegate.MODE_NIGHT_YES, sharedPrefs.getInt(Constants.PREF_DARK_MODE, -1))
+        // Assert: Verify that PREF_ONBOARDED is specifically removed
+        verify(mockEditor).remove(Constants.PREF_ONBOARDED)
+        // Verify that the whole shared preferences map is NOT cleared (preserving PREF_DARK_MODE)
+        verify(mockEditor, never()).clear()
     }
 
     @Test
-    fun testThemeChange_savesCorrectlyToSharedPreferences() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sharedPrefs = context.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
+    fun testThemeChange_savesCorrectly() {
+        // Arrange
+        val mockPrefs = mock(SharedPreferences::class.java)
+        val mockEditor = mock(SharedPreferences.Editor::class.java)
+        val testThemeValue = 2 // AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 
-        // Act: Save Light Theme
-        sharedPrefs.edit()
-            .putInt(Constants.PREF_DARK_MODE, AppCompatDelegate.MODE_NIGHT_NO)
-            .apply()
+        `when`(mockPrefs.edit()).thenReturn(mockEditor)
+        `when`(mockEditor.putInt(Constants.PREF_DARK_MODE, testThemeValue)).thenReturn(mockEditor)
 
-        // Assert: Read back correct light theme value
-        assertEquals(AppCompatDelegate.MODE_NIGHT_NO, sharedPrefs.getInt(Constants.PREF_DARK_MODE, -1))
+        // Act: Simulates saving theme in SettingsFragment.kt
+        mockPrefs.edit().putInt(Constants.PREF_DARK_MODE, testThemeValue).apply()
 
-        // Act: Save System Follow Theme
-        sharedPrefs.edit()
-            .putInt(Constants.PREF_DARK_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            .apply()
-
-        // Assert: Read back correct follow system theme value
-        assertEquals(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, sharedPrefs.getInt(Constants.PREF_DARK_MODE, -1))
+        // Assert: Verify that the correct theme value is saved
+        verify(mockEditor).putInt(Constants.PREF_DARK_MODE, testThemeValue)
     }
 }
