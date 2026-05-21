@@ -48,12 +48,6 @@
     <string name="btn_gone_paid">Gone Paid?</string>
     <string name="verified_free">✓ Verified Free</string>
 
-    <!-- My Stack (legacy) -->
-    <string name="nav_my_stack">My Stack</string>
-    <string name="my_stack_title">My Stack</string>
-    <string name="empty_stack">Your stack is empty</string>
-    <string name="empty_stack_subtitle">Save tools from the home screen</string>
-
     <!-- Submit Tool -->
     <string name="submit_title">Submit a Tool</string>
     <string name="submit_subtitle">Know a free AI tool? Share it with the community.</string>

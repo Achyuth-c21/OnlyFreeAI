@@ -23,10 +23,4 @@
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
 
-    <fragment
-        android:id="@+id/myStackFragment"
-        android:name="com.onlyfreeai.app.ui.stack.MyStackFragment"
-        android:label="My Stack"
-        tools:layout="@layout/fragment_my_stack" />
-
 </navigation>

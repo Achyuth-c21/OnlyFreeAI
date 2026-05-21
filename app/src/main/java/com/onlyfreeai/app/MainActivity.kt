@@ -45,8 +45,7 @@ class MainActivity : AppCompatActivity() {
             val shouldShow = when (destination.id) {
                 R.id.homeFragment,
                 R.id.submitToolFragment,
-                R.id.settingsFragment,
-                R.id.myStackFragment -> true
+                R.id.settingsFragment -> true
                 else -> false
             }
 
