@@ -2,6 +2,7 @@ package com.onlyfreeai.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -31,6 +32,31 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupNavigation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkSessionActive()
+    }
+
+    private fun checkSessionActive() {
+        val user = auth.currentUser
+        if (user != null) {
+            user.reload().addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    val exception = task.exception
+                    // If the user was deleted, disabled, or revoked on the server, force logout
+                    if (exception != null) {
+                        Log.e("MainActivity", "User session is invalid. Force logging out.", exception)
+                        auth.signOut()
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+        }
     }
 
     private fun setupNavigation() {

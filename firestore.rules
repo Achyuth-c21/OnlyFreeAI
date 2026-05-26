@@ -11,14 +11,16 @@ service cloud.firestore {
     // Users can read/write their own profile, but CANNOT change isAdmin
     match /users/{userId} {
       allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
-      // New users must have isAdmin = false (prevents self-promotion)
+      // New users must have isAdmin = false (prevents self-promotion) and matching email
       allow create: if request.auth != null 
         && request.auth.uid == userId
-        && request.resource.data.isAdmin == false;
-      // Existing users cannot change their isAdmin field
+        && request.resource.data.isAdmin == false
+        && request.resource.data.email == request.auth.token.email;
+      // Existing users cannot change their isAdmin field or their email address
       allow update: if request.auth != null 
         && request.auth.uid == userId
-        && request.resource.data.isAdmin == resource.data.isAdmin;
+        && request.resource.data.isAdmin == resource.data.isAdmin
+        && request.resource.data.email == resource.data.email;
     }
 
     // Tools are readable by all authenticated users; admins can create/delete; users can increment/decrement saves or flag tools
@@ -28,8 +30,9 @@ service cloud.firestore {
       allow update: if isAdmin()
         || (request.auth != null 
             && (
-              // Users can only increment or decrement the saves count by exactly 1
+              // Users can only increment or decrement the saves count by exactly 1 on active/live tools
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['saves'])
+               && resource.data.status == 'live'
                && (request.resource.data.saves == resource.data.saves + 1 || request.resource.data.saves == resource.data.saves - 1))
               ||
               // Users can only update status to flagged when it was previously live
@@ -42,7 +45,10 @@ service cloud.firestore {
     // Submissions: users can create their own and read their own; only admins can read all, update, or delete
     match /submissions/{submissionId} {
       allow read: if request.auth != null && (request.auth.uid == resource.data.submittedBy || isAdmin());
-      allow create: if request.auth != null && request.resource.data.submittedBy == request.auth.uid;
+      // Users can only submit new tools with a status of 'pending' (prevents bypassing admin review)
+      allow create: if request.auth != null 
+        && request.resource.data.submittedBy == request.auth.uid
+        && request.resource.data.status == 'pending';
       allow update, delete: if isAdmin();
     }
   }
