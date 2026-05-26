@@ -154,9 +154,36 @@
             android:textColor="@color/brand_primary"
             android:textStyle="bold"
             android:layout_gravity="end"
-            android:layout_marginBottom="28dp"
+            android:layout_marginBottom="20dp"
             android:clickable="true"
             android:focusable="true" />
+
+        <!-- Terms of Service Checkbox -->
+        <LinearLayout
+            android:id="@+id/layout_terms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <CheckBox
+                android:id="@+id/cb_terms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/brand_primary"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:id="@+id/tv_terms_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/terms_checkbox_label"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
 
         <!-- Primary Action Button -->
         <Button

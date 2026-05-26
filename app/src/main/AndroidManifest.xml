@@ -50,6 +50,12 @@
             android:theme="@style/Theme.OnlyFreeAI"
             android:parentActivityName=".MainActivity" />
 
+        <!-- Legal Pages (Privacy Policy / Terms of Service) -->
+        <activity
+            android:name=".ui.settings.LegalActivity"
+            android:exported="false"
+            android:theme="@style/Theme.OnlyFreeAI" />
+
         <!-- FCM Service -->
         <service
             android:name=".util.OnlyFreeAIMessagingService"

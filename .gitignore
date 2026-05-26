@@ -17,3 +17,5 @@ package-lock.json
 # Sensitive files — do NOT commit
 app/google-services.json
 release.keystore
+.firebase/
+

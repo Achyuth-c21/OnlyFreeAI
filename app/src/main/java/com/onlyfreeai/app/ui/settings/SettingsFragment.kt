@@ -49,11 +49,14 @@ class SettingsFragment : Fragment() {
         setupTheme()
         setupLanguage()
         setupVersion()
+        setupLegal()
         setupLogout()
 
         // Apply premium tactile feedback
         binding.settingTheme.scalePress()
         binding.settingLanguage.scalePress()
+        binding.settingPrivacy.scalePress()
+        binding.settingTerms.scalePress()
         binding.btnLogout.scalePress()
 
         // Gentle scale-up entrance animation for the avatar photo
@@ -147,6 +150,19 @@ class SettingsFragment : Fragment() {
             binding.tvVersionValue.text = pInfo.versionName ?: "1.0.0"
         } catch (e: Exception) {
             binding.tvVersionValue.text = "1.0.0"
+        }
+    }
+
+    private fun setupLegal() {
+        binding.settingPrivacy.setOnClickListener {
+            val intent = Intent(requireContext(), LegalActivity::class.java)
+            intent.putExtra(LegalActivity.EXTRA_LEGAL_TYPE, LegalActivity.TYPE_PRIVACY)
+            startActivity(intent)
+        }
+        binding.settingTerms.setOnClickListener {
+            val intent = Intent(requireContext(), LegalActivity::class.java)
+            intent.putExtra(LegalActivity.EXTRA_LEGAL_TYPE, LegalActivity.TYPE_TERMS)
+            startActivity(intent)
         }
     }
 

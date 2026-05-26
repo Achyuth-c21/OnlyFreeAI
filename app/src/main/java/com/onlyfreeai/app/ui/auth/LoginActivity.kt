@@ -2,6 +2,11 @@ package com.onlyfreeai.app.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -19,6 +24,7 @@ import kotlinx.coroutines.launch
 import com.onlyfreeai.app.MainActivity
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.ActivityLoginBinding
+import com.onlyfreeai.app.ui.settings.LegalActivity
 import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
 import com.onlyfreeai.app.util.toast
@@ -103,6 +109,7 @@ class LoginActivity : AppCompatActivity() {
 
         setupGoogleSignIn()
         setupClickListeners()
+        setupTermsCheckbox()
         updateUI()
 
         // Apply premium touch animations
@@ -142,9 +149,59 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
+    private fun setupTermsCheckbox() {
+        val fullText = getString(R.string.terms_checkbox_label)
+        val spannable = SpannableString(fullText)
+
+        val termsStart = fullText.indexOf("Terms of Service")
+        val termsEnd = termsStart + "Terms of Service".length
+        val privacyStart = fullText.indexOf("Privacy Policy")
+        val privacyEnd = privacyStart + "Privacy Policy".length
+
+        val brandColor = getColor(R.color.brand_primary)
+
+        spannable.setSpan(object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                startActivity(Intent(this@LoginActivity, LegalActivity::class.java).apply {
+                    putExtra(LegalActivity.EXTRA_LEGAL_TYPE, LegalActivity.TYPE_TERMS)
+                })
+            }
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = brandColor
+                ds.isUnderlineText = false
+                ds.isFakeBoldText = true
+            }
+        }, termsStart, termsEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        spannable.setSpan(object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                startActivity(Intent(this@LoginActivity, LegalActivity::class.java).apply {
+                    putExtra(LegalActivity.EXTRA_LEGAL_TYPE, LegalActivity.TYPE_PRIVACY)
+                })
+            }
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = brandColor
+                ds.isUnderlineText = false
+                ds.isFakeBoldText = true
+            }
+        }, privacyStart, privacyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        binding.tvTermsLabel.text = spannable
+        binding.tvTermsLabel.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    private fun isTermsAccepted(): Boolean {
+        if (!binding.cbTerms.isChecked) {
+            toast(getString(R.string.error_terms_not_accepted))
+            return false
+        }
+        return true
+    }
+
     private fun setupClickListeners() {
         // Google Sign-In
         binding.btnGoogleSignIn.setOnClickListener {
+            if (!isTermsAccepted()) return@setOnClickListener
             setAuthLoading(true)
             // Sign out of the previous Google session first so the account picker always shows
             googleSignInClient.signOut().addOnCompleteListener {
@@ -155,6 +212,8 @@ class LoginActivity : AppCompatActivity() {
 
         // Email/Password action (Sign In or Sign Up)
         binding.btnAction.setOnClickListener {
+            if (!isTermsAccepted()) return@setOnClickListener
+
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
 
@@ -308,6 +367,7 @@ class LoginActivity : AppCompatActivity() {
         binding.btnGoogleSignIn.isEnabled = !loading
         binding.tvSwitchAction.isEnabled = !loading
         binding.tvForgotPassword.isEnabled = !loading
+        binding.cbTerms.isEnabled = !loading
     }
 
     private fun navigateToMain() {

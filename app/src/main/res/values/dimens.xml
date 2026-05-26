@@ -52,4 +52,9 @@
     <integer name="anim_duration_medium">350</integer>
     <integer name="anim_duration_slow">500</integer>
     <integer name="anim_stagger_delay">60</integer>
+
+    <!-- Legal -->
+    <dimen name="legal_padding">24dp</dimen>
+    <dimen name="legal_back_size">40dp</dimen>
+    <dimen name="legal_back_margin">16dp</dimen>
 </resources>

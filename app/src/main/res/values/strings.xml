@@ -31,6 +31,8 @@
     <string name="error_sign_in_failed">Sign in failed. Please check your credentials.</string>
     <string name="error_sign_up_failed">Sign up failed. Please try again.</string>
     <string name="reset_email_sent">Password reset email sent!</string>
+    <string name="terms_checkbox_label">I agree to the Terms of Service and Privacy Policy</string>
+    <string name="error_terms_not_accepted">Please accept the Terms of Service to continue</string>
 
     <!-- Home -->
     <string name="search_hint">Search tools or what you want to do…</string>
@@ -72,6 +74,10 @@
     <string name="settings_logout">Log Out</string>
     <string name="settings_logout_confirm">Are you sure you want to log out?</string>
     <string name="settings_version">Version</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_terms">Terms of Service</string>
+    <string name="settings_privacy_subtitle">How we handle your data</string>
+    <string name="settings_terms_subtitle">Rules and guidelines</string>
 
     <!-- Admin -->
     <string name="admin_title">Admin Panel</string>

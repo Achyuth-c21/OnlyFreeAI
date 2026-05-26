@@ -12,5 +12,9 @@
         "supportEmail": "nampallyachyuth111@gmail.com"
       }
     }
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
 }
