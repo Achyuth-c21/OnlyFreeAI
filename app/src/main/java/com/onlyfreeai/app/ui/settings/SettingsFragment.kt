@@ -52,12 +52,14 @@ class SettingsFragment : Fragment() {
         setupVersion()
         setupLegal()
         setupLogout()
+        setupDeleteAccount()
 
         // Apply premium tactile feedback
         binding.settingTheme.scalePress()
         binding.settingLanguage.scalePress()
         binding.settingPrivacy.scalePress()
         binding.settingTerms.scalePress()
+        binding.settingDelete.scalePress()
         binding.btnLogout.scalePress()
 
         // Gentle scale-up entrance animation for the avatar photo
@@ -191,6 +193,58 @@ class SettingsFragment : Fragment() {
                         val intent = Intent(requireContext(), LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+    }
+
+    private fun setupDeleteAccount() {
+        binding.settingDelete.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Delete Account")
+                .setMessage("Are you sure you want to permanently delete your account and all saved data? This action cannot be undone.")
+                .setPositiveButton("Delete Permanently") { _, _ ->
+                    val user = auth.currentUser
+                    val uid = user?.uid
+                    if (user != null && uid != null) {
+                        toast("Deleting profile data...")
+                        // 1. Delete user profile from Firestore first
+                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                            .collection("users")
+                            .document(uid)
+                            .delete()
+                            .addOnSuccessListener {
+                                // 2. Delete user account from Firebase Authentication
+                                user.delete().addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        toast("Account deleted successfully.")
+                                        // Clear local preferences
+                                        requireContext().getSharedPreferences(
+                                            com.onlyfreeai.app.util.Constants.PREFS_NAME,
+                                            android.content.Context.MODE_PRIVATE
+                                        ).edit().remove(com.onlyfreeai.app.util.Constants.PREF_ONBOARDED).apply()
+
+                                        // Navigate back to LoginActivity
+                                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                        startActivity(intent)
+                                    } else {
+                                        val exception = task.exception
+                                        if (exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
+                                            toast("Security check failed. Please log out, log in again, and retry account deletion.")
+                                        } else {
+                                            toast("Failed to delete account: ${exception?.localizedMessage}")
+                                        }
+                                    }
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                toast("Failed to delete profile: ${e.localizedMessage}")
+                            }
+                    } else {
+                        toast("User not authenticated.")
                     }
                 }
                 .setNegativeButton("Cancel", null)

@@ -48,12 +48,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Use release keystore if it exists, otherwise fall back to debug signing
+            // Ensure release signing configuration is fully configured for release builds
             val releaseKeystoreFile = file("../release.keystore")
-            signingConfig = if (releaseKeystoreFile.exists()) {
-                signingConfigs.getByName("release")
+            if (releaseKeystoreFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
             } else {
-                signingConfigs.getByName("debug")
+                throw org.gradle.api.GradleException("Release keystore file is missing for a Release build! Please place release.keystore in the parent directory.")
             }
         }
     }
@@ -103,6 +103,7 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
     // Google Sign In
     implementation("com.google.android.gms:play-services-auth:21.1.0")

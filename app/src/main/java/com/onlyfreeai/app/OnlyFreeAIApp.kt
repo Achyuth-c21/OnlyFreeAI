@@ -15,6 +15,16 @@ class OnlyFreeAIApp : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
+        // Initialize Firebase App Check with Play Integrity for production security
+        try {
+            val firebaseAppCheck = com.google.firebase.appcheck.FirebaseAppCheck.getInstance()
+            firebaseAppCheck.installAppCheckProviderFactory(
+                com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory.getInstance()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("OnlyFreeAIApp", "App Check initialization failed", e)
+        }
+
         val prefs = getSharedPreferences(com.onlyfreeai.app.util.Constants.PREFS_NAME, android.content.Context.MODE_PRIVATE)
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(prefs.getInt(com.onlyfreeai.app.util.Constants.PREF_DARK_MODE, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
 
