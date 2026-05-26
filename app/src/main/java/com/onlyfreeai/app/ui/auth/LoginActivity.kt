@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package com.onlyfreeai.app.ui.auth
 
 import android.content.Intent
