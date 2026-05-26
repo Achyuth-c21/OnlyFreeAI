@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.onlyfreeai.app.BuildConfig
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.FragmentSettingsBinding
 import com.onlyfreeai.app.ui.auth.LoginActivity
@@ -28,7 +29,7 @@ class SettingsFragment : Fragment() {
         GoogleSignIn.getClient(
             requireContext(),
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com")
+                .requestIdToken(BuildConfig.WEB_CLIENT_ID)
                 .requestEmail()
                 .build()
         )
@@ -181,18 +182,20 @@ class SettingsFragment : Fragment() {
                         android.content.Context.MODE_PRIVATE
                     ).edit().remove(com.onlyfreeai.app.util.Constants.PREF_ONBOARDED).apply()
 
-                    // Clear Firestore offline cache to remove previous user's data
-                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                        .clearPersistence()
+                    // Terminate and clear persistence before signing out
+                    val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    db.terminate().addOnCompleteListener {
+                        db.clearPersistence().addOnCompleteListener {
+                            // Sign out from Firebase
+                            auth.signOut()
 
-                    // Sign out from Firebase
-                    auth.signOut()
-
-                    // Revoke Google access so account picker shows next time
-                    googleSignInClient.revokeAccess().addOnCompleteListener {
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
+                            // Revoke Google access so account picker shows next time
+                            googleSignInClient.revokeAccess().addOnCompleteListener {
+                                val intent = Intent(requireContext(), LoginActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                startActivity(intent)
+                            }
+                        }
                     }
                 }
                 .setNegativeButton("Cancel", null)
@@ -210,15 +213,15 @@ class SettingsFragment : Fragment() {
                     val uid = user?.uid
                     if (user != null && uid != null) {
                         requireContext().toast("Deleting profile data...")
-                        // 1. Delete user profile from Firestore first
-                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                            .collection("users")
-                            .document(uid)
-                            .delete()
-                            .addOnSuccessListener {
-                                // 2. Delete user account from Firebase Authentication
-                                user.delete().addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
+                        // 1. Delete user account from Firebase Authentication first
+                        user.delete().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // 2. Delete user profile from Firestore only if Auth deletion succeeds
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(uid)
+                                    .delete()
+                                    .addOnSuccessListener {
                                         requireContext().toast("Account deleted successfully.")
                                         // Clear local preferences
                                         requireContext().getSharedPreferences(
@@ -230,19 +233,19 @@ class SettingsFragment : Fragment() {
                                         val intent = Intent(requireContext(), LoginActivity::class.java)
                                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                                         startActivity(intent)
-                                    } else {
-                                        val exception = task.exception
-                                        if (exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
-                                            requireContext().toast("Security check failed. Please log out, log in again, and retry account deletion.")
-                                        } else {
-                                            requireContext().toast("Failed to delete account: ${exception?.localizedMessage}")
-                                        }
                                     }
+                                    .addOnFailureListener { e ->
+                                        requireContext().toast("Failed to delete profile: ${e.localizedMessage}")
+                                    }
+                            } else {
+                                val exception = task.exception
+                                if (exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
+                                    requireContext().toast("Security check failed. Please log out, log in again, and retry account deletion.")
+                                } else {
+                                    requireContext().toast("Failed to delete account: ${exception?.localizedMessage}")
                                 }
                             }
-                            .addOnFailureListener { e ->
-                                requireContext().toast("Failed to delete profile: ${e.localizedMessage}")
-                            }
+                        }
                     } else {
                         requireContext().toast("User not authenticated.")
                     }

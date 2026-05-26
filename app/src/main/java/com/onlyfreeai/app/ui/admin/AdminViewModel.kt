@@ -9,6 +9,7 @@ import com.onlyfreeai.app.data.model.Submission
 import com.onlyfreeai.app.data.model.Tool
 import com.onlyfreeai.app.data.repository.SubmissionRepository
 import com.onlyfreeai.app.data.repository.ToolRepository
+import com.onlyfreeai.app.util.SingleLiveEvent
 import kotlinx.coroutines.launch
 
 class AdminViewModel : ViewModel() {
@@ -62,7 +63,7 @@ class AdminViewModel : ViewModel() {
         }
     }
 
-    private val _error = MutableLiveData<String>()
+    private val _error = SingleLiveEvent<String>()
     val error: LiveData<String> = _error
 
     fun approveSubmission(submission: Submission) {

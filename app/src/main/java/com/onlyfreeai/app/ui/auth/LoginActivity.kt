@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import com.onlyfreeai.app.BuildConfig
 import com.onlyfreeai.app.MainActivity
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.ActivityLoginBinding
@@ -37,17 +38,6 @@ class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "LoginActivity"
-
-        /**
-         * The Web Client ID from your google-services.json (client_type: 3).
-         * This MUST match exactly — it is the OAuth 2.0 Web Client ID from
-         * Google Cloud Console → Credentials, NOT the Android client ID.
-         *
-         * If R.string.default_web_client_id is auto-generated and correct,
-         * this constant acts as a fallback / explicit override.
-         */
-        private const val WEB_CLIENT_ID =
-            "533784515869-lrjf3le9ri6ogamstetlr964qqu0uuov.apps.googleusercontent.com"
     }
 
     private lateinit var binding: ActivityLoginBinding
@@ -139,11 +129,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupGoogleSignIn() {
-        // Use the hardcoded Web Client ID directly.
-        // This avoids the problem where R.string.default_web_client_id is either
-        // missing or maps to the wrong value.
+        // Use the Web Client ID from BuildConfig.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(WEB_CLIENT_ID)
+            .requestIdToken(BuildConfig.WEB_CLIENT_ID)
             .requestEmail()
             .build()
 

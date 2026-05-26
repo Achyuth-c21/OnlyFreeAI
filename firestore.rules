@@ -8,6 +8,12 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // Helper: check if submission is under the daily limit
+    function canSubmit(uid, lastSubmissionDate) {
+      let userDoc = get(/databases/$(database)/documents/users/$(uid)).data;
+      return !(userDoc.submissionsToday >= 3 && userDoc.lastSubmissionDate == lastSubmissionDate);
+    }
+
     // Users can read/write their own profile, but CANNOT change isAdmin
     match /users/{userId} {
       allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
@@ -16,11 +22,11 @@ service cloud.firestore {
         && request.auth.uid == userId
         && request.resource.data.isAdmin == false
         && request.resource.data.email == request.auth.token.email;
-      // Existing users cannot change their isAdmin field or their email address
+      // Existing users cannot change their isAdmin field or their email address unless the requester is an admin
       allow update: if request.auth != null 
-        && request.auth.uid == userId
-        && request.resource.data.isAdmin == resource.data.isAdmin
-        && request.resource.data.email == resource.data.email;
+        && (request.auth.uid == userId || isAdmin())
+        && (request.resource.data.isAdmin == resource.data.isAdmin || isAdmin())
+        && (request.resource.data.email == resource.data.email || isAdmin());
     }
 
     // Tools are readable by all authenticated users; admins can create/delete; users can increment/decrement saves or flag tools
@@ -31,11 +37,21 @@ service cloud.firestore {
         || (request.auth != null 
             && (
               // Users can only increment or decrement the saves count by exactly 1 on active/live tools
+              // NOTE: This get() call counts against Firestore read quota.
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['saves'])
                && resource.data.status == 'live'
-               && (request.resource.data.saves == resource.data.saves + 1 || request.resource.data.saves == resource.data.saves - 1))
+               && (
+                 (request.resource.data.saves == resource.data.saves + 1 
+                  && !(toolId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.savedTools))
+                 ||
+                 (request.resource.data.saves == resource.data.saves - 1 
+                  && (toolId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.savedTools))
+               ))
               ||
               // Users can only update status to flagged when it was previously live
+              // NOTE: A Cloud Function or a separate sub-collection is required to fully rate-limit 
+              // and enforce that each user can only flag a tool once, as Firestore rules alone 
+              // cannot track per-user transaction counts across documents.
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
                && request.resource.data.status == 'flagged'
                && resource.data.status == 'live')
@@ -48,7 +64,8 @@ service cloud.firestore {
       // Users can only submit new tools with a status of 'pending' (prevents bypassing admin review)
       allow create: if request.auth != null 
         && request.resource.data.submittedBy == request.auth.uid
-        && request.resource.data.status == 'pending';
+        && request.resource.data.status == 'pending'
+        && canSubmit(request.auth.uid, request.resource.data.lastSubmissionDate);
       allow update, delete: if isAdmin();
     }
   }

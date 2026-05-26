@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.onlyfreeai.app.data.model.Tool
 import com.onlyfreeai.app.data.repository.ToolRepository
 import com.onlyfreeai.app.data.repository.UserRepository
+import com.onlyfreeai.app.util.SingleLiveEvent
 import kotlinx.coroutines.launch
 
 class ToolDetailViewModel : ViewModel() {
@@ -20,10 +21,10 @@ class ToolDetailViewModel : ViewModel() {
     private val _isSaved = MutableLiveData<Boolean>()
     val isSaved: LiveData<Boolean> = _isSaved
 
-    private val _error = MutableLiveData<String>()
+    private val _error = SingleLiveEvent<String>()
     val error: LiveData<String> = _error
 
-    private val _message = MutableLiveData<String>()
+    private val _message = SingleLiveEvent<String>()
     val message: LiveData<String> = _message
 
     private val _isLoading = MutableLiveData<Boolean>()

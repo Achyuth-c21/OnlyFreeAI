@@ -52,7 +52,7 @@ jobs:
             "https://developer.indusappstore.com/devtools/apk/upgrade/com.onlyfreeai.app" \
             -H "Authorization: O-Bearer ${{ secrets.INDUS_API_KEY }}" \
             -F "file=@$APK_PATH" \
-            -v
+            --silent --show-error --fail
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

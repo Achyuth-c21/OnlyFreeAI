@@ -12,6 +12,12 @@ android {
     namespace = "com.onlyfreeai.app"
     compileSdk = 34
 
+    val localProps = Properties()
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) {
+        localProps.load(localPropsFile.inputStream())
+    }
+
     defaultConfig {
         applicationId = "com.onlyfreeai.app"
         minSdk = 26
@@ -20,13 +26,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "WEB_CLIENT_ID", "\"${localProps.getProperty("WEB_CLIENT_ID", "")}\"")
     }
 
     signingConfigs {
         create("release") {
             val keystoreFile = file("../release.keystore")
-            val localProps = Properties()
-            val localPropsFile = rootProject.file("local.properties")
             if (localPropsFile.exists()) {
                 localProps.load(localPropsFile.inputStream())
             }
@@ -79,6 +85,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
