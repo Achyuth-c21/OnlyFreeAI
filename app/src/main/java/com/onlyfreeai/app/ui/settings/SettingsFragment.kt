@@ -209,7 +209,7 @@ class SettingsFragment : Fragment() {
                     val user = auth.currentUser
                     val uid = user?.uid
                     if (user != null && uid != null) {
-                        toast("Deleting profile data...")
+                        requireContext().toast("Deleting profile data...")
                         // 1. Delete user profile from Firestore first
                         com.google.firebase.firestore.FirebaseFirestore.getInstance()
                             .collection("users")
@@ -219,7 +219,7 @@ class SettingsFragment : Fragment() {
                                 // 2. Delete user account from Firebase Authentication
                                 user.delete().addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
-                                        toast("Account deleted successfully.")
+                                        requireContext().toast("Account deleted successfully.")
                                         // Clear local preferences
                                         requireContext().getSharedPreferences(
                                             com.onlyfreeai.app.util.Constants.PREFS_NAME,
@@ -233,18 +233,18 @@ class SettingsFragment : Fragment() {
                                     } else {
                                         val exception = task.exception
                                         if (exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
-                                            toast("Security check failed. Please log out, log in again, and retry account deletion.")
+                                            requireContext().toast("Security check failed. Please log out, log in again, and retry account deletion.")
                                         } else {
-                                            toast("Failed to delete account: ${exception?.localizedMessage}")
+                                            requireContext().toast("Failed to delete account: ${exception?.localizedMessage}")
                                         }
                                     }
                                 }
                             }
                             .addOnFailureListener { e ->
-                                toast("Failed to delete profile: ${e.localizedMessage}")
+                                requireContext().toast("Failed to delete profile: ${e.localizedMessage}")
                             }
                     } else {
-                        toast("User not authenticated.")
+                        requireContext().toast("User not authenticated.")
                     }
                 }
                 .setNegativeButton("Cancel", null)
