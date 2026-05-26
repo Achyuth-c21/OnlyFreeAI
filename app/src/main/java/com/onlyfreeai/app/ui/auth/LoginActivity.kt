@@ -267,10 +267,12 @@ class LoginActivity : AppCompatActivity() {
             auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task ->
                     setAuthLoading(false)
-                    // Always show generic message to prevent email enumeration
-                    toast("If an account exists with this email, a reset link has been sent.")
-                    if (!task.isSuccessful) {
-                        Log.w(TAG, "Password reset request failed", task.exception)
+                    if (task.isSuccessful) {
+                        toast("If an account exists with this email, a reset link has been sent.")
+                    } else {
+                        val errorMsg = task.exception?.localizedMessage ?: "Failed to send reset email."
+                        toast("Error: $errorMsg")
+                        Log.e(TAG, "Password reset request failed: $errorMsg", task.exception)
                     }
                 }
         }
@@ -299,7 +301,20 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    onAuthSuccess()
+                    val user = auth.currentUser
+                    if (user != null) {
+                        if (user.isEmailVerified) {
+                            onAuthSuccess()
+                        } else {
+                            setAuthLoading(false)
+                            toast("Please verify your email address. A verification link has been resent.")
+                            user.sendEmailVerification()
+                            auth.signOut()
+                        }
+                    } else {
+                        setAuthLoading(false)
+                        toast("User not found.")
+                    }
                 } else {
                     setAuthLoading(false)
                     val errorMsg = task.exception?.localizedMessage
@@ -315,7 +330,24 @@ class LoginActivity : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    onAuthSuccess()
+                    val user = auth.currentUser
+                    user?.sendEmailVerification()
+                        ?.addOnCompleteListener { verificationTask ->
+                            setAuthLoading(false)
+                            if (verificationTask.isSuccessful) {
+                                toast("Verification email sent! Please check your inbox and verify your email to log in.")
+                                isSignUpMode = false
+                                updateUI()
+                            } else {
+                                val errorMsg = verificationTask.exception?.localizedMessage
+                                    ?: "Failed to send verification email."
+                                toast("Failed to send verification email: $errorMsg")
+                            }
+                            auth.signOut()
+                        } ?: run {
+                            setAuthLoading(false)
+                            auth.signOut()
+                        }
                 } else {
                     setAuthLoading(false)
                     val errorMsg = task.exception?.localizedMessage
