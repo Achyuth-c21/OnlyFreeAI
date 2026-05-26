@@ -53,7 +53,17 @@ android {
             if (releaseKeystoreFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             } else {
-                throw org.gradle.api.GradleException("Release keystore file is missing for a Release build! Please place release.keystore in the parent directory.")
+                // Only throw exception if actively running a release-related compilation task
+                val isReleaseTask = gradle.startParameter.taskNames.any {
+                    it.contains("release", ignoreCase = true) || 
+                    (it.contains("assemble", ignoreCase = true) && !it.contains("debug", ignoreCase = true))
+                }
+                if (isReleaseTask) {
+                    throw org.gradle.api.GradleException("Release keystore file is missing for a Release build! Please place release.keystore in the parent directory.")
+                } else {
+                    // Fall back to debug signing so local debug builds and IDE sync continue to work without a release.keystore
+                    signingConfig = signingConfigs.getByName("debug")
+                }
             }
         }
     }
