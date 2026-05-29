@@ -2,71 +2,112 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper: check if the requesting user is an admin
+    // ─── Helpers ─────────────────────────────────────────────
+
+    // Check if the requesting user is an admin
     function isAdmin() {
       return request.auth != null
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Helper: check if submission is under the daily limit
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if submission is under the daily limit
     function canSubmit(uid, lastSubmissionDate) {
       let userDoc = get(/databases/$(database)/documents/users/$(uid)).data;
       return !(userDoc.submissionsToday >= 3 && userDoc.lastSubmissionDate == lastSubmissionDate);
     }
 
-    // Users can read/write their own profile, but CANNOT change isAdmin
+    // Validate string field length
+    function isValidString(field, maxLen) {
+      return field is string && field.size() <= maxLen;
+    }
+
+    // ─── Users Collection ────────────────────────────────────
+
     match /users/{userId} {
-      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Users can read their own profile; admins can read any profile
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+
       // New users must have isAdmin = false (prevents self-promotion) and matching email
-      allow create: if request.auth != null 
+      allow create: if isAuthenticated()
         && request.auth.uid == userId
         && request.resource.data.isAdmin == false
-        && request.resource.data.email == request.auth.token.email;
-      // Existing users cannot change their isAdmin field or their email address unless the requester is an admin
-      allow update: if request.auth != null 
+        && request.resource.data.email == request.auth.token.email
+        && isValidString(request.resource.data.name, 100)
+        && isValidString(request.resource.data.email, 254);
+
+      // Existing users cannot change isAdmin or email unless they're an admin
+      allow update: if isAuthenticated()
         && (request.auth.uid == userId || isAdmin())
         && (request.resource.data.isAdmin == resource.data.isAdmin || isAdmin())
         && (request.resource.data.email == resource.data.email || isAdmin());
+
+      // Only admin can delete user documents (except self-deletion is handled via app)
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
     }
 
-    // Tools are readable by all authenticated users; admins can create/delete; users can increment/decrement saves or flag tools
+    // ─── Tools Collection ────────────────────────────────────
+
     match /tools/{toolId} {
-      allow read: if request.auth != null;
-      allow create, delete: if isAdmin();
+      // Any authenticated user can read live tools
+      allow read: if isAuthenticated();
+
+      // Only admins can create or delete tools
+      allow create: if isAdmin()
+        && isValidString(request.resource.data.name, 50)
+        && isValidString(request.resource.data.description, 300);
+
+      allow delete: if isAdmin();
+
+      // Update rules: admin has full access; users can only do specific operations
       allow update: if isAdmin()
-        || (request.auth != null 
+        || (isAuthenticated()
             && (
-              // Users can only increment or decrement the saves count by exactly 1 on active/live tools
-              // NOTE: This get() call counts against Firestore read quota.
+              // Users can only increment or decrement saves count by exactly 1 on live tools
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['saves'])
                && resource.data.status == 'live'
                && (
-                 (request.resource.data.saves == resource.data.saves + 1 
+                 (request.resource.data.saves == resource.data.saves + 1
                   && !(toolId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.savedTools))
                  ||
-                 (request.resource.data.saves == resource.data.saves - 1 
+                 (request.resource.data.saves == resource.data.saves - 1
                   && (toolId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.savedTools))
                ))
               ||
-              // Users can only update status to flagged when it was previously live
-              // NOTE: A Cloud Function or a separate sub-collection is required to fully rate-limit 
-              // and enforce that each user can only flag a tool once, as Firestore rules alone 
-              // cannot track per-user transaction counts across documents.
+              // Users can flag a live tool as 'flagged' for admin review
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
                && request.resource.data.status == 'flagged'
                && resource.data.status == 'live')
             ));
     }
 
-    // Submissions: users can create their own and read their own; only admins can read all, update, or delete
+    // ─── Submissions Collection ──────────────────────────────
+
     match /submissions/{submissionId} {
-      allow read: if request.auth != null && (request.auth.uid == resource.data.submittedBy || isAdmin());
-      // Users can only submit new tools with a status of 'pending' (prevents bypassing admin review)
-      allow create: if request.auth != null 
+      // Users can read their own submissions; admins can read all
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.submittedBy || isAdmin());
+
+      // Users can create submissions with status 'pending' only, with validation
+      allow create: if isAuthenticated()
         && request.resource.data.submittedBy == request.auth.uid
         && request.resource.data.status == 'pending'
+        && isValidString(request.resource.data.name, 50)
+        && isValidString(request.resource.data.description, 300)
+        && isValidString(request.resource.data.websiteUrl, 2048)
         && canSubmit(request.auth.uid, request.resource.data.lastSubmissionDate);
+
+      // Only admins can update or delete submissions
       allow update, delete: if isAdmin();
+    }
+
+    // ─── Deny all other collections ──────────────────────────
+    // Prevent any reads/writes to collections not explicitly defined above
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

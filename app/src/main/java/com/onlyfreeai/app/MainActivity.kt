@@ -2,16 +2,10 @@ package com.onlyfreeai.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.onlyfreeai.app.databinding.ActivityMainBinding
-import com.onlyfreeai.app.ui.admin.AdminActivity
 import com.onlyfreeai.app.ui.auth.LoginActivity
-import com.onlyfreeai.app.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,8 +24,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setupNavigation()
     }
 
     override fun onResume() {
@@ -39,52 +31,19 @@ class MainActivity : AppCompatActivity() {
         checkSessionActive()
     }
 
+    /**
+     * Verify the Firebase Auth session is still valid on every resume.
+     * If the user was disabled/deleted server-side, force logout immediately.
+     */
     private fun checkSessionActive() {
-        val user = auth.currentUser
-        if (user != null) {
-            user.reload().addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    val exception = task.exception
-                    // If the user was deleted, disabled, or revoked on the server, force logout
-                    if (exception != null) {
-                        Log.e("MainActivity", "User session is invalid. Force logging out.", exception)
-                        auth.signOut()
-                        val intent = Intent(this, LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun setupNavigation() {
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
-        val navController = navHostFragment?.navController ?: return
-
-        binding.bottomNavigation.setupWithNavController(navController)
-
-        // Smoothly hide/show bottom navigation with transitions
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            val shouldShow = when (destination.id) {
-                R.id.homeFragment,
-                R.id.submitToolFragment,
-                R.id.settingsFragment -> true
-                else -> false
-            }
-
-            if (shouldShow) {
-                if (binding.bottomNavigation.visibility != View.VISIBLE) {
-                    binding.bottomNavigation.slideUp(250)
-                    binding.bottomNavShadow.fadeIn(250)
-                }
-            } else {
-                if (binding.bottomNavigation.visibility == View.VISIBLE) {
-                    binding.bottomNavigation.slideDown(200)
-                    binding.bottomNavShadow.fadeOut(200)
-                }
+        val user = auth.currentUser ?: return
+        user.reload().addOnCompleteListener { task ->
+            if (!task.isSuccessful && task.exception != null) {
+                auth.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
             }
         }
     }

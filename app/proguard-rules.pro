@@ -1,6 +1,10 @@
-# Add project specific ProGuard rules here.
+# ─── OnlyFreeAI ProGuard Rules ───────────────────────────────
+
+# Keep annotations and signatures for reflection
 -keepattributes Signature
 -keepattributes *Annotation*
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
 
 # Firebase
 -keep class com.google.firebase.** { *; }
@@ -20,11 +24,18 @@
 # OkHttp
 -dontwarn okhttp3.**
 -dontwarn okio.**
+-dontwarn javax.annotation.**
 
-# Strip non-essential logs from production release builds
+# Kotlin coroutines
+-dontwarn kotlinx.coroutines.**
+
+# ─── SECURITY: Strip ALL log calls from production release builds ───
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
     public static int v(...);
     public static int d(...);
     public static int i(...);
+    public static int w(...);
+    public static int e(...);
+    public static int wtf(...);
 }

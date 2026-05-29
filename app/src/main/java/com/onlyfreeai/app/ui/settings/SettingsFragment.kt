@@ -9,9 +9,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.onlyfreeai.app.BuildConfig
 import com.onlyfreeai.app.R
 import com.onlyfreeai.app.databinding.FragmentSettingsBinding
@@ -92,6 +95,15 @@ class SettingsFragment : Fragment() {
         val user = auth.currentUser
         binding.tvProfileName.text = user?.displayName ?: user?.email?.substringBefore("@") ?: "User"
         binding.tvProfileEmail.text = user?.email ?: ""
+
+        // Load profile photo
+        val photoUrl = user?.photoUrl?.toString()
+        if (!photoUrl.isNullOrBlank()) {
+            Glide.with(this)
+                .load(photoUrl)
+                .transform(CircleCrop())
+                .into(binding.ivAvatar)
+        }
     }
 
     private fun setupTheme() {
@@ -119,7 +131,8 @@ class SettingsFragment : Fragment() {
                         else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                     }
                     AppCompatDelegate.setDefaultNightMode(mode)
-                    requireContext().getSharedPreferences(com.onlyfreeai.app.util.Constants.PREFS_NAME, android.content.Context.MODE_PRIVATE).edit().putInt(com.onlyfreeai.app.util.Constants.PREF_DARK_MODE, mode).apply()
+                    requireContext().getSharedPreferences(Constants.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+                        .edit().putInt(Constants.PREF_DARK_MODE, mode).apply()
                     updateThemeLabel()
                     dialog.dismiss()
                 }
@@ -152,7 +165,7 @@ class SettingsFragment : Fragment() {
         try {
             val pInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
             binding.tvVersionValue.text = pInfo.versionName ?: "1.0.0"
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             binding.tvVersionValue.text = "1.0.0"
         }
     }
@@ -176,20 +189,17 @@ class SettingsFragment : Fragment() {
                 .setTitle(getString(R.string.settings_logout))
                 .setMessage(getString(R.string.settings_logout_confirm))
                 .setPositiveButton(getString(R.string.settings_logout)) { _, _ ->
-                    // Clear local preferences (theme preference is kept intentionally)
+                    // Clear session preferences (keep theme)
                     requireContext().getSharedPreferences(
-                        com.onlyfreeai.app.util.Constants.PREFS_NAME,
+                        Constants.PREFS_NAME,
                         android.content.Context.MODE_PRIVATE
-                    ).edit().remove(com.onlyfreeai.app.util.Constants.PREF_ONBOARDED).apply()
+                    ).edit().remove(Constants.PREF_ONBOARDED).apply()
 
-                    // Terminate and clear persistence before signing out
-                    val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    // Terminate Firestore persistence, then sign out
+                    val db = FirebaseFirestore.getInstance()
                     db.terminate().addOnCompleteListener {
                         db.clearPersistence().addOnCompleteListener {
-                            // Sign out from Firebase
                             auth.signOut()
-
-                            // Revoke Google access so account picker shows next time
                             googleSignInClient.revokeAccess().addOnCompleteListener {
                                 val intent = Intent(requireContext(), LoginActivity::class.java)
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -203,6 +213,11 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    /**
+     * SECURITY FIX: Delete Firestore data FIRST, then delete the Firebase Auth account.
+     * The original code deleted Auth first, which could leave orphaned Firestore data
+     * if the Firestore delete failed (since the auth token was already revoked).
+     */
     private fun setupDeleteAccount() {
         binding.settingDelete.setOnClickListener {
             AlertDialog.Builder(requireContext())
@@ -212,42 +227,42 @@ class SettingsFragment : Fragment() {
                     val user = auth.currentUser
                     val uid = user?.uid
                     if (user != null && uid != null) {
-                        requireContext().toast("Deleting profile data...")
-                        // 1. Delete user account from Firebase Authentication first
-                        user.delete().addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // 2. Delete user profile from Firestore only if Auth deletion succeeds
-                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                                    .collection("users")
-                                    .document(uid)
-                                    .delete()
-                                    .addOnSuccessListener {
+                        requireContext().toast("Deleting account data...")
+
+                        val db = FirebaseFirestore.getInstance()
+
+                        // Step 1: Delete Firestore user document FIRST (while auth token is still valid)
+                        db.collection("users").document(uid).delete()
+                            .addOnSuccessListener {
+                                // Step 2: Now delete the Firebase Auth account
+                                user.delete().addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
                                         requireContext().toast("Account deleted successfully.")
                                         // Clear local preferences
                                         requireContext().getSharedPreferences(
-                                            com.onlyfreeai.app.util.Constants.PREFS_NAME,
+                                            Constants.PREFS_NAME,
                                             android.content.Context.MODE_PRIVATE
-                                        ).edit().remove(com.onlyfreeai.app.util.Constants.PREF_ONBOARDED).apply()
+                                        ).edit().clear().apply()
 
-                                        // Navigate back to LoginActivity
+                                        // Navigate to Login
                                         val intent = Intent(requireContext(), LoginActivity::class.java)
                                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                                         startActivity(intent)
+                                    } else {
+                                        val exception = task.exception
+                                        if (exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
+                                            requireContext().toast("Please log out, log in again, and retry deletion for security.")
+                                        } else {
+                                            requireContext().toast("Failed to delete auth account: ${exception?.localizedMessage}")
+                                        }
                                     }
-                                    .addOnFailureListener { e ->
-                                        requireContext().toast("Failed to delete profile: ${e.localizedMessage}")
-                                    }
-                            } else {
-                                val exception = task.exception
-                                if (exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
-                                    requireContext().toast("Security check failed. Please log out, log in again, and retry account deletion.")
-                                } else {
-                                    requireContext().toast("Failed to delete account: ${exception?.localizedMessage}")
                                 }
                             }
-                        }
+                            .addOnFailureListener { e ->
+                                requireContext().toast("Failed to delete profile data: ${e.localizedMessage}")
+                            }
                     } else {
-                        requireContext().toast("User not authenticated.")
+                        requireContext().toast("Not authenticated.")
                     }
                 }
                 .setNegativeButton("Cancel", null)

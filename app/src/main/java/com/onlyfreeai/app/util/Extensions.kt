@@ -69,14 +69,20 @@ fun Timestamp.toRelativeTime(): String {
 // ─── String Extensions ──────────────────────────────────────
 fun String.sanitize(): String {
     return this
-        .replace(Regex("<script[^>]*>[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), "") // Strip scripts first
-        .replace(Regex("<[^>]*>"), "") // Then strip remaining HTML tags
+        .replace(Regex("<script[^>]*>[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), "") // Strip scripts
+        .replace(Regex("<style[^>]*>[\\s\\S]*?</style>", RegexOption.IGNORE_CASE), "")   // Strip styles
+        .replace(Regex("on\\w+\\s*=\\s*\"[^\"]*\"", RegexOption.IGNORE_CASE), "")         // Strip event handlers
+        .replace(Regex("on\\w+\\s*=\\s*'[^']*'", RegexOption.IGNORE_CASE), "")            // Strip single-quote handlers
+        .replace(Regex("<[^>]*>"), "")                                                     // Strip all remaining HTML tags
+        .replace(Regex("javascript:", RegexOption.IGNORE_CASE), "")                        // Strip javascript: URIs
+        .replace(Regex("data:", RegexOption.IGNORE_CASE), "")                              // Strip data: URIs
         .trim()
         .take(Constants.MAX_DESCRIPTION_LENGTH)
 }
 
+/** SECURITY: Only HTTPS URLs are considered valid */
 fun String.isValidUrl(): Boolean {
-    return this.startsWith("http://") || this.startsWith("https://")
+    return this.startsWith("https://")
 }
 
 // ─── Animation Extensions ───────────────────────────────────

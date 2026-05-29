@@ -5,20 +5,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.onlyfreeai.app.databinding.FragmentHomeBinding
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.google.firebase.auth.FirebaseAuth
 import com.onlyfreeai.app.R
+import com.onlyfreeai.app.databinding.FragmentHomeBinding
 import com.onlyfreeai.app.ui.detail.ToolDetailActivity
 import com.onlyfreeai.app.util.Constants
 import com.onlyfreeai.app.util.hide
 import com.onlyfreeai.app.util.show
-
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -37,13 +39,47 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
+        setupProfilePhoto()
         setupRecyclerView()
         setupSearch()
         setupCategoryFilter()
         observeData()
         setupAdminButton()
+        setupSubmitFab()
 
         viewModel.loadTools()
+    }
+
+    /**
+     * Load the user's Google profile photo into the top-right ImageView.
+     * Tapping it navigates to the Settings screen.
+     */
+    private fun setupProfilePhoto() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val photoUrl = user?.photoUrl?.toString()
+
+        if (!photoUrl.isNullOrBlank()) {
+            Glide.with(this)
+                .load(photoUrl)
+                .transform(CircleCrop())
+                .placeholder(R.drawable.ic_settings)
+                .error(R.drawable.ic_settings)
+                .into(binding.ivProfile)
+        } else {
+            // Fallback: show settings gear icon for users without a photo
+            binding.ivProfile.setImageResource(R.drawable.ic_settings)
+        }
+
+        binding.ivProfile.setOnClickListener {
+            findNavController().navigate(R.id.settingsFragment)
+        }
+    }
+
+    /** FAB navigates to the Submit Tool screen */
+    private fun setupSubmitFab() {
+        binding.fabSubmit.setOnClickListener {
+            findNavController().navigate(R.id.submitToolFragment)
+        }
     }
 
     private fun setupAdminButton() {
@@ -59,8 +95,7 @@ class HomeFragment : Fragment() {
                 } else {
                     binding.btnAdmin.hide()
                 }
-            } catch (e: Exception) {
-                // Silently handle — admin button just stays hidden
+            } catch (_: Exception) {
                 if (_binding != null) binding.btnAdmin.hide()
             }
         }
@@ -109,7 +144,7 @@ class HomeFragment : Fragment() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = spinnerAdapter
 
-        // Dynamically build the beautiful chips
+        // Dynamically build the chips
         binding.chipGroupCategories.removeAllViews()
         Constants.CATEGORIES.forEachIndexed { index, category ->
             val chip = com.google.android.material.chip.Chip(requireContext()).apply {
@@ -117,29 +152,26 @@ class HomeFragment : Fragment() {
                 isClickable = true
                 isCheckable = true
                 isCheckedIconVisible = false
-                
-                // Styling corresponding to Midnight Luxe
+
                 setTextColor(androidx.core.content.ContextCompat.getColorStateList(requireContext(), R.color.chip_text_color))
                 background = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.selector_category_chip)
                 chipBackgroundColor = null
                 chipStrokeColor = null
                 chipStrokeWidth = 0f
                 rippleColor = null
-                
+
                 val horizontalPadding = (20 * resources.displayMetrics.density).toInt()
                 val verticalPadding = (10 * resources.displayMetrics.density).toInt()
                 setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
-                
+
                 id = index
                 isChecked = (index == 0)
                 isSelected = (index == 0)
             }
 
             chip.setOnClickListener {
-                // Sync spinner selection in the background
                 binding.spinnerCategory.setSelection(index)
 
-                // Select chip and uncheck others
                 for (i in 0 until binding.chipGroupCategories.childCount) {
                     val child = binding.chipGroupCategories.getChildAt(i) as? com.google.android.material.chip.Chip
                     val isCurrent = (child?.id == index)
@@ -147,12 +179,6 @@ class HomeFragment : Fragment() {
                     child?.isSelected = isCurrent
                 }
 
-                // Reset position tracker in adapter so stagger entrance fires again
-                (binding.recyclerTools.adapter as? ToolAdapter)?.apply {
-                    // We can't access private property lastPosition directly, but submitting a new list will reset automatically or we can ignore
-                }
-
-                // Load appropriate category
                 if (category == "All") {
                     viewModel.loadTools()
                 } else {

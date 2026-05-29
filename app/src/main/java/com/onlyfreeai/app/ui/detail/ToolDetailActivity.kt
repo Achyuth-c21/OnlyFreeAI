@@ -67,10 +67,15 @@ class ToolDetailActivity : AppCompatActivity() {
                 btnSaveTool.scalePress()
                 btnGonePaid.scalePress()
 
-                // Visit Tool button
+                // Visit Tool button — SECURITY: validate URL before opening browser
                 btnVisitTool.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(tool.websiteUrl))
-                    startActivity(intent)
+                    val url = tool.websiteUrl
+                    if (url.startsWith("https://")) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
+                    } else {
+                        toast("Invalid URL — only HTTPS links are allowed")
+                    }
                 }
 
                 // Save / Unsave

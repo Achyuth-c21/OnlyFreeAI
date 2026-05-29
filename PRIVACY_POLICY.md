@@ -37,4 +37,4 @@ You have the right to access, update, or delete your personal information. If yo
 We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
 
 ## 8. Contact Us
-If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us.
+If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at **nampallyachyuth111@gmail.com**.

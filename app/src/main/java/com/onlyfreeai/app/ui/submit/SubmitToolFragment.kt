@@ -74,8 +74,8 @@ class SubmitToolFragment : Fragment() {
             val category = binding.spinnerCategory.selectedItem.toString()
             val whatsFree = binding.etWhatsFree.text.toString().trim()
 
-            if (url.isBlank() || !android.util.Patterns.WEB_URL.matcher(url).matches()) {
-                requireContext().toast("Please enter a valid URL")
+            if (url.isBlank() || !url.startsWith("https://") || !android.util.Patterns.WEB_URL.matcher(url).matches()) {
+                requireContext().toast("Please enter a valid HTTPS URL")
                 return@setOnClickListener
             }
             if (name.isBlank() || name.length > Constants.MAX_TOOL_NAME_LENGTH) {
