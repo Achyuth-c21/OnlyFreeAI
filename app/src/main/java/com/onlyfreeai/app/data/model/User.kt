@@ -16,7 +16,9 @@ data class User(
     val submittedTools: List<String> = emptyList(),
     val isAdmin: Boolean = false,
     val submissionsToday: Int = 0,
-    val lastSubmissionDate: String = ""
+    val lastSubmissionDate: String = "",
+    val isDeleted: Boolean = false,
+    val fcmToken: String = ""
 ) {
     companion object {
         const val COLLECTION = "users"

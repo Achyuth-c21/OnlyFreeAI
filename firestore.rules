@@ -15,10 +15,18 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Helper to format server timestamp as "yyyy-MM-dd" date string
+    function getTodayStr() {
+      let year = string(request.time.year());
+      let month = request.time.month() < 10 ? '0' + string(request.time.month()) : string(request.time.month());
+      let day = request.time.day() < 10 ? '0' + string(request.time.day()) : string(request.time.day());
+      return year + '-' + month + '-' + day;
+    }
+
     // Check if submission is under the daily limit
-    function canSubmit(uid, lastSubmissionDate) {
+    function canSubmit(uid) {
       let userDoc = get(/databases/$(database)/documents/users/$(uid)).data;
-      return !(userDoc.submissionsToday >= 3 && userDoc.lastSubmissionDate == lastSubmissionDate);
+      return !(userDoc.submissionsToday >= 3 && userDoc.lastSubmissionDate == getTodayStr());
     }
 
     // Validate string field length
@@ -37,17 +45,32 @@ service cloud.firestore {
         && request.auth.uid == userId
         && request.resource.data.isAdmin == false
         && request.resource.data.email == request.auth.token.email
+        && (!('isDeleted' in request.resource.data) || request.resource.data.isDeleted == false)
         && isValidString(request.resource.data.name, 100)
         && isValidString(request.resource.data.email, 254);
 
-      // Existing users cannot change isAdmin or email unless they're an admin
+      // Existing users cannot change isAdmin or email unless they're an admin.
+      // Also validate rate limiting increment and soft-delete transitions.
       allow update: if isAuthenticated()
-        && (request.auth.uid == userId || isAdmin())
-        && (request.resource.data.isAdmin == resource.data.isAdmin || isAdmin())
-        && (request.resource.data.email == resource.data.email || isAdmin());
+        && (isAdmin() || (
+             request.auth.uid == userId
+             && request.resource.data.isAdmin == resource.data.get('isAdmin', false)
+             && (request.resource.data.email == resource.data.email || (request.resource.data.get('isDeleted', false) == true && request.resource.data.email == ""))
+             && (request.resource.data.get('isDeleted', false) == resource.data.get('isDeleted', false) || (resource.data.get('isDeleted', false) == false && request.resource.data.get('isDeleted', false) == true))
+             && (
+               !(request.resource.data.get('submissionsToday', 0) != resource.data.get('submissionsToday', 0) || request.resource.data.get('lastSubmissionDate', '') != resource.data.get('lastSubmissionDate', ''))
+               || (
+                 request.resource.data.get('lastSubmissionDate', '') == getTodayStr()
+                 && (
+                   (resource.data.get('lastSubmissionDate', '') == request.resource.data.get('lastSubmissionDate', '') && request.resource.data.get('submissionsToday', 0) == resource.data.get('submissionsToday', 0) + 1)
+                   || (resource.data.get('lastSubmissionDate', '') != request.resource.data.get('lastSubmissionDate', '') && request.resource.data.get('submissionsToday', 0) == 1)
+                 )
+               )
+             )
+           ));
 
-      // Only admin can delete user documents (except self-deletion is handled via app)
-      allow delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Only admin can delete user documents (soft-delete is used for users)
+      allow delete: if isAuthenticated() && isAdmin();
     }
 
     // ─── Tools Collection ────────────────────────────────────
@@ -98,7 +121,7 @@ service cloud.firestore {
         && isValidString(request.resource.data.name, 50)
         && isValidString(request.resource.data.description, 300)
         && isValidString(request.resource.data.websiteUrl, 2048)
-        && canSubmit(request.auth.uid, request.resource.data.lastSubmissionDate);
+        && canSubmit(request.auth.uid);
 
       // Only admins can update or delete submissions
       allow update, delete: if isAdmin();

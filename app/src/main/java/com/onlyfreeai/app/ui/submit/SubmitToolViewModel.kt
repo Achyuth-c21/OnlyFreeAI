@@ -72,20 +72,27 @@ class SubmitToolViewModel : ViewModel() {
                     return@launch
                 }
 
+                // SECURITY: Validate URL before submission (M-4 fix)
+                if (!url.startsWith("https://")) {
+                    _submitResult.value = Result.failure(Exception("Only HTTPS URLs are allowed"))
+                    return@launch
+                }
+
                 val submission = Submission(
                     submittedBy = userId,
                     websiteUrl = url,
-                    name = name,
-                    description = description,
+                    name = name.take(com.onlyfreeai.app.util.Constants.MAX_TOOL_NAME_LENGTH),
+                    description = description.take(com.onlyfreeai.app.util.Constants.MAX_DESCRIPTION_LENGTH),
                     logoUrl = fetchedLogoUrl,
                     category = category,
-                    whatsFree = whatsFree,
+                    whatsFree = whatsFree.map { it.take(com.onlyfreeai.app.util.Constants.MAX_FREE_ITEM_LENGTH) },
                     status = Submission.STATUS_PENDING
                 )
 
-                val id = submissionRepository.submitTool(submission)
-                userRepository.incrementSubmissionCount()
-                userRepository.addSubmittedTool(id)
+                // SECURITY (H-1 fix): Atomic batch write — creates the submission AND
+                // updates the rate-limit counter in a single transaction to prevent
+                // race-condition bypass where submission is created without incrementing the counter
+                val id = submissionRepository.submitToolAtomic(submission, userId)
 
                 _submitResult.value = Result.success(id)
             } catch (e: Exception) {

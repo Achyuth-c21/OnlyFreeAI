@@ -27,7 +27,7 @@
     <string name="error_empty_email">Please enter your email</string>
     <string name="error_empty_password">Please enter your password</string>
     <string name="error_password_mismatch">Passwords don\'t match</string>
-    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_password_short">Password must be at least 8 characters</string>
     <string name="error_sign_in_failed">Sign in failed. Please check your credentials.</string>
     <string name="error_sign_up_failed">Sign up failed. Please try again.</string>
     <string name="reset_email_sent">Password reset email sent!</string>

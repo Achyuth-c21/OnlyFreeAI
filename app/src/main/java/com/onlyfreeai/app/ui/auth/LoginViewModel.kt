@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.onlyfreeai.app.data.model.User
 import com.onlyfreeai.app.data.repository.UserRepository
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginViewModel : ViewModel() {
 
@@ -16,6 +16,12 @@ class LoginViewModel : ViewModel() {
         val firebaseUser = auth.currentUser ?: return
 
         try {
+            val token = try {
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().token.await()
+            } catch (e: Exception) {
+                ""
+            }
+
             val existingUser = userRepository.getCurrentUser()
             if (existingUser == null) {
                 val newUser = User(
@@ -23,12 +29,21 @@ class LoginViewModel : ViewModel() {
                     name = firebaseUser.displayName ?: "",
                     email = firebaseUser.email ?: "",
                     photoUrl = firebaseUser.photoUrl?.toString() ?: "",
-                    isAdmin = false
+                    isAdmin = false,
+                    fcmToken = token
                 )
                 userRepository.createOrUpdateUser(newUser)
+            } else {
+                if (token.isNotEmpty() && existingUser.fcmToken != token) {
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection(User.COLLECTION)
+                        .document(firebaseUser.uid)
+                        .update("fcmToken", token)
+                        .await()
+                }
             }
         } catch (e: Exception) {
-            android.util.Log.e("LoginViewModel", "Failed to save user to Firestore", e)
+            com.onlyfreeai.app.util.Logger.e("LoginViewModel", "Failed to save user to Firestore", e)
             throw e // Propagate so caller can show appropriate feedback
         }
     }

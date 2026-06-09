@@ -8,7 +8,7 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.util.Log
+import com.onlyfreeai.app.util.Logger
 import android.util.Patterns
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
     ) { result ->
         val data = result.data
         if (data == null) {
-            Log.w(TAG, "Google sign-in cancelled (no data returned)")
+            Logger.w(TAG, "Google sign-in cancelled (no data returned)")
             setAuthLoading(false)
             toast("Sign in cancelled.")
             return@registerForActivityResult
@@ -65,12 +65,12 @@ class LoginActivity : AppCompatActivity() {
             if (idToken != null) {
                 firebaseAuthWithGoogle(idToken)
             } else {
-                Log.e(TAG, "Google sign-in succeeded but no ID token was returned.")
+                Logger.e(TAG, "Google sign-in succeeded but no ID token was returned.")
                 setAuthLoading(false)
                 toast("Sign in failed: no ID token received.")
             }
         } catch (e: ApiException) {
-            Log.e(TAG, "Google sign-in failed, statusCode=${e.statusCode}, message=${e.message}", e)
+            Logger.e(TAG, "Google sign-in failed, statusCode=${e.statusCode}, message=${e.message}", e)
             setAuthLoading(false)
 
             val userMsg = when (e.statusCode) {
@@ -218,7 +218,7 @@ class LoginActivity : AppCompatActivity() {
                 toast(getString(R.string.error_empty_password))
                 return@setOnClickListener
             }
-            if (password.length < 6) {
+            if (password.length < 8) {
                 toast(getString(R.string.error_password_short))
                 return@setOnClickListener
             }
@@ -261,7 +261,7 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         val errorMsg = task.exception?.localizedMessage ?: "Failed to send reset email."
                         toast("Error: $errorMsg")
-                        Log.e(TAG, "Password reset request failed: $errorMsg", task.exception)
+                        Logger.e(TAG, "Password reset request failed: $errorMsg", task.exception)
                     }
                 }
         }
@@ -308,7 +308,7 @@ class LoginActivity : AppCompatActivity() {
                     setAuthLoading(false)
                     val errorMsg = task.exception?.localizedMessage
                         ?: getString(R.string.error_sign_in_failed)
-                    Log.e(TAG, "Email sign-in failed: $errorMsg", task.exception)
+                    Logger.e(TAG, "Email sign-in failed: $errorMsg", task.exception)
                     toast(errorMsg)
                 }
             }
@@ -341,7 +341,7 @@ class LoginActivity : AppCompatActivity() {
                     setAuthLoading(false)
                     val errorMsg = task.exception?.localizedMessage
                         ?: getString(R.string.error_sign_up_failed)
-                    Log.e(TAG, "Email sign-up failed: $errorMsg", task.exception)
+                    Logger.e(TAG, "Email sign-up failed: $errorMsg", task.exception)
                     toast(errorMsg)
                 }
             }
@@ -352,9 +352,16 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    onAuthSuccess()
+                    val user = auth.currentUser
+                    if (user != null && user.isEmailVerified) {
+                        onAuthSuccess()
+                    } else {
+                        setAuthLoading(false)
+                        auth.signOut()
+                        toast("Google email is not verified. Please verify your email first.")
+                    }
                 } else {
-                    Log.e(TAG, "signInWithCredential failed", task.exception)
+                    Logger.e(TAG, "signInWithCredential failed", task.exception)
                     if (!isFinishing && !isDestroyed) {
                         setAuthLoading(false)
                         toast("Authentication failed: ${task.exception?.localizedMessage}")
@@ -368,7 +375,7 @@ class LoginActivity : AppCompatActivity() {
             try {
                 viewModel.saveUserToFirestore()
             } catch (e: Exception) {
-                Log.e(TAG, "Firestore save error", e)
+                Logger.e(TAG, "Firestore save error", e)
                 // Still navigate — user IS authenticated, just warn about sync
                 if (!isFinishing && !isDestroyed) {
                     toast("Signed in, but profile sync failed. It will retry.")

@@ -10,31 +10,39 @@ class ToolRepository {
     private val db = FirebaseFirestore.getInstance()
     private val toolsRef = db.collection(Tool.COLLECTION)
 
-    suspend fun getLiveTools(): List<Tool> {
+    suspend fun getLiveTools(limit: Int = 50): List<Tool> {
         return toolsRef
             .whereEqualTo("status", Tool.STATUS_LIVE)
             .orderBy("dateAdded", Query.Direction.DESCENDING)
+            .limit(limit.toLong())
             .get()
             .await()
             .toObjects(Tool::class.java)
     }
 
-    suspend fun getToolsByCategory(category: String): List<Tool> {
+    suspend fun getToolsByCategory(category: String, limit: Int = 50): List<Tool> {
         return toolsRef
             .whereEqualTo("status", Tool.STATUS_LIVE)
             .whereEqualTo("category", category)
             .orderBy("dateAdded", Query.Direction.DESCENDING)
+            .limit(limit.toLong())
             .get()
             .await()
             .toObjects(Tool::class.java)
     }
 
-    suspend fun searchTools(query: String): List<Tool> {
+    suspend fun searchTools(query: String, limit: Int = 100): List<Tool> {
         // Firestore doesn't support full-text search natively
-        // We fetch all live tools and filter client-side for v1
-        val allTools = getLiveTools()
+        // We fetch up to 100 recent live tools and filter client-side to mitigate DoS/memory issues
+        val searchPool = toolsRef
+            .whereEqualTo("status", Tool.STATUS_LIVE)
+            .orderBy("dateAdded", Query.Direction.DESCENDING)
+            .limit(limit.toLong())
+            .get()
+            .await()
+            .toObjects(Tool::class.java)
         val lowerQuery = query.lowercase()
-        return allTools.filter {
+        return searchPool.filter {
             it.name.lowercase().contains(lowerQuery) ||
             it.description.lowercase().contains(lowerQuery) ||
             it.category.lowercase().contains(lowerQuery)
@@ -80,7 +88,7 @@ class ToolRepository {
     }
 
     suspend fun getCategories(): List<String> {
-        val tools = getLiveTools()
+        val tools = getLiveTools(limit = 1000)
         return tools.map { it.category }.distinct().sorted()
     }
 

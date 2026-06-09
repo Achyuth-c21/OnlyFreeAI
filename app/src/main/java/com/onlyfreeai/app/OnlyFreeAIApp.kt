@@ -42,7 +42,7 @@ class OnlyFreeAIApp : Application() {
                 com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory.getInstance()
             )
         } catch (e: Exception) {
-            android.util.Log.e("OnlyFreeAIApp", "App Check initialization failed", e)
+            com.onlyfreeai.app.util.Logger.e("OnlyFreeAIApp", "App Check initialization failed", e)
         }
 
         // Apply theme preference

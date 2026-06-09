@@ -15,6 +15,34 @@ class SubmissionRepository {
         return docRef.id
     }
 
+    suspend fun submitToolAtomic(submission: Submission, userId: String): String {
+        return db.runTransaction { transaction ->
+            val userDocRef = db.collection(com.onlyfreeai.app.data.model.User.COLLECTION).document(userId)
+            val userSnapshot = transaction.get(userDocRef)
+            
+            val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+            val submissionsToday = userSnapshot.getLong("submissionsToday") ?: 0
+            val lastSubmissionDate = userSnapshot.getString("lastSubmissionDate") ?: ""
+            
+            val newCount = if (lastSubmissionDate == today) {
+                if (submissionsToday >= com.onlyfreeai.app.data.model.User.MAX_SUBMISSIONS_PER_DAY) {
+                    throw Exception("Daily submission limit reached")
+                }
+                submissionsToday + 1
+            } else {
+                1
+            }
+            
+            val submissionDocRef = submissionsRef.document()
+            transaction.set(submissionDocRef, submission)
+            transaction.update(userDocRef, mapOf(
+                "submissionsToday" to newCount,
+                "lastSubmissionDate" to today
+            ))
+            submissionDocRef.id
+        }.await()
+    }
+
     suspend fun getPendingSubmissions(): List<Submission> {
         return submissionsRef
             .whereEqualTo("status", Submission.STATUS_PENDING)

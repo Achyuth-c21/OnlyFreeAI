@@ -2,9 +2,12 @@ package com.onlyfreeai.app.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.jsoup.Jsoup
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -14,6 +17,8 @@ import java.util.concurrent.TimeUnit
  * SECURITY HARDENING:
  * - HTTPS-only enforcement
  * - SSRF protection: blocks private/internal IPs, loopback, link-local, metadata endpoints
+ * - DNS rebinding protection: re-validates resolved IP at connection time
+ * - Manual redirect handling with full re-validation on each hop
  * - Response size capped at 1MB
  * - Content-Type validation
  * - Strict timeouts
@@ -31,13 +36,33 @@ object UrlFetcher {
     // Max response body size: 1MB (prevents memory exhaustion from malicious large responses)
     private const val MAX_RESPONSE_BYTES = 1L * 1024 * 1024
 
+    // Max redirect hops to prevent infinite redirect loops
+    private const val MAX_REDIRECTS = 5
+
+    /**
+     * DNS rebinding protection interceptor.
+     * Re-validates the resolved IP address at the network layer to catch
+     * addresses that changed between DNS resolution and actual connection.
+     */
+    private val dnsRebindingInterceptor = Interceptor { chain ->
+        val connection = chain.connection()
+        val socket = connection?.socket()
+        val remoteAddress = socket?.inetAddress
+        if (remoteAddress != null && isPrivateOrDangerousAddress(remoteAddress)) {
+            throw IOException("SSRF blocked: DNS rebinding detected — resolved to private/internal address")
+        }
+        chain.proceed(chain.request())
+    }
+
     private val client = OkHttpClient.Builder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(8, TimeUnit.SECONDS)
         .writeTimeout(8, TimeUnit.SECONDS)
-        .followRedirects(true)
-        .followSslRedirects(true)
-        // Limit redirects to prevent redirect loops
+        // SECURITY: Disable automatic redirects — we handle them manually with re-validation
+        .followRedirects(false)
+        .followSslRedirects(false)
+        // SECURITY: DNS rebinding protection at the network layer
+        .addNetworkInterceptor(dnsRebindingInterceptor)
         .build()
 
     /**
@@ -90,44 +115,90 @@ object UrlFetcher {
         return true
     }
 
+    /**
+     * Validates a URL for safety (HTTPS, hostname, port, DNS resolution).
+     * Used for the initial request and for each redirect hop.
+     */
+    private fun validateUrlSafety(url: String) {
+        if (!url.startsWith("https://")) {
+            throw IllegalArgumentException("Only HTTPS URLs are allowed")
+        }
+
+        val parsedUrl = java.net.URL(url)
+        val host = parsedUrl.host
+            ?: throw IllegalArgumentException("Invalid hostname")
+
+        if (!isHostnameSafe(host)) {
+            throw IllegalArgumentException("Blocked hostname for security reasons")
+        }
+
+        // Block custom port usage (only 443 allowed for HTTPS)
+        if (parsedUrl.port != -1 && parsedUrl.port != 443) {
+            throw IllegalArgumentException("Non-standard ports are not allowed")
+        }
+
+        // Resolve hostname and validate all addresses
+        val addresses = java.net.InetAddress.getAllByName(host)
+        for (address in addresses) {
+            if (isPrivateOrDangerousAddress(address)) {
+                throw IllegalArgumentException("Private/internal URLs are not allowed")
+            }
+        }
+    }
+
+    /**
+     * Executes a request with manual redirect handling.
+     * Each redirect target is fully re-validated for SSRF safety.
+     */
+    private fun executeWithSafeRedirects(request: Request): Response {
+        var currentRequest = request
+        var redirectCount = 0
+
+        while (true) {
+            val response = client.newCall(currentRequest).execute()
+            val code = response.code
+
+            // Not a redirect — return as-is
+            if (code !in 300..399) {
+                return response
+            }
+
+            // Redirect limit check
+            redirectCount++
+            if (redirectCount > MAX_REDIRECTS) {
+                response.close()
+                throw IOException("Too many redirects (max $MAX_REDIRECTS)")
+            }
+
+            // Get the redirect location
+            val location = response.header("Location")
+            response.close()
+
+            if (location.isNullOrBlank()) {
+                throw IOException("Redirect with no Location header")
+            }
+
+            // Resolve relative URLs against current request URL
+            val resolvedUrl = currentRequest.url.resolve(location)?.toString()
+                ?: throw IOException("Invalid redirect URL: $location")
+
+            // SECURITY: Re-validate the redirect target for SSRF
+            validateUrlSafety(resolvedUrl)
+
+            // Build new request for the redirect target
+            currentRequest = currentRequest.newBuilder()
+                .url(resolvedUrl)
+                .build()
+        }
+    }
+
     suspend fun fetchMetadata(url: String): Result<UrlMetadata> = withContext(Dispatchers.IO) {
         try {
-            // SECURITY: Enforce HTTPS only
-            if (!url.startsWith("https://")) {
-                return@withContext Result.failure(IllegalArgumentException("Only HTTPS URLs are allowed"))
-            }
+            // SECURITY: Validate the initial URL
             if (!url.isValidUrl()) {
                 return@withContext Result.failure(IllegalArgumentException("Invalid URL"))
             }
-
-            // Parse URL and validate hostname
-            val parsedUrl = java.net.URL(url)
-            val host = parsedUrl.host ?: return@withContext Result.failure(
-                IllegalArgumentException("Invalid hostname")
-            )
-
-            if (!isHostnameSafe(host)) {
-                return@withContext Result.failure(
-                    IllegalArgumentException("Blocked hostname for security reasons")
-                )
-            }
-
-            // Block custom port usage (only 443 allowed for HTTPS)
-            if (parsedUrl.port != -1 && parsedUrl.port != 443) {
-                return@withContext Result.failure(
-                    IllegalArgumentException("Non-standard ports are not allowed")
-                )
-            }
-
-            // Resolve hostname and validate all addresses
-            val addresses = java.net.InetAddress.getAllByName(host)
-            for (address in addresses) {
-                if (isPrivateOrDangerousAddress(address)) {
-                    return@withContext Result.failure(
-                        IllegalArgumentException("Private/internal URLs are not allowed")
-                    )
-                }
-            }
+            validateUrlSafety(url)
 
             val request = Request.Builder()
                 .url(url)
@@ -135,7 +206,7 @@ object UrlFetcher {
                 .header("Accept", "text/html")
                 .build()
 
-            val response = client.newCall(request).execute()
+            val response = executeWithSafeRedirects(request)
             val html = response.use { resp ->
                 if (!resp.isSuccessful) {
                     throw Exception("HTTP ${resp.code}: ${resp.message}")

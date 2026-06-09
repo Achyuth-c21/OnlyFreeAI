@@ -231,8 +231,16 @@ class SettingsFragment : Fragment() {
 
                         val db = FirebaseFirestore.getInstance()
 
-                        // Step 1: Delete Firestore user document FIRST (while auth token is still valid)
-                        db.collection("users").document(uid).delete()
+                        // Step 1: Soft-delete Firestore user document FIRST (while auth token is still valid)
+                        db.collection("users").document(uid).update(
+                            mapOf(
+                                "name" to "[Deleted User]",
+                                "email" to "",
+                                "photoUrl" to "",
+                                "savedTools" to emptyList<String>(),
+                                "isDeleted" to true
+                            )
+                        )
                             .addOnSuccessListener {
                                 // Step 2: Now delete the Firebase Auth account
                                 user.delete().addOnCompleteListener { task ->
